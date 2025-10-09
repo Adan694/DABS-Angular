@@ -1,0 +1,189 @@
+<app-navbar></app-navbar>
+
+<!-- ============================= -->
+<!-- HERO SECTION -->
+<!-- ============================= -->
+<section class="hero-section container-fluid text-center text-md-start py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center justify-content-center">
+      <div class="col-md-6 mb-4 mb-md-0">
+        <h1 id="heading1" class="display-5 fw-bold mb-3 text-dark">
+          Find Caring Professionals
+          <br />
+          Guided by Experience
+        </h1>
+        <h3 id="heading3" class="text-secondary fw-normal">Trusted Care Teams</h3>
+      </div>
+      <div class="col-md-6 text-center">
+        <img
+          src="assets/images/mains.png"
+          class="img-fluid rounded-3 shadow-sm"
+          alt="Healthcare illustration"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- DOCTORS SECTION -->
+<!-- ============================= -->
+<section id="doctors" class="py-5 bg-white">
+  <div class="container text-center">
+    <h1 class="section-title mb-5">Consult Best Doctors</h1>
+
+    <div class="row g-3">
+      <div
+        class="col-6 col-md-4 col-lg-3"
+        *ngFor="
+          let spec of [
+            { name: 'Dermatologist', icon: 'bi-heart-pulse' },
+            { name: 'Urologist', icon: 'bi-droplet' },
+            { name: 'Dentist', icon: 'bi-braces' },
+            { name: 'Obesity Specialist', icon: 'bi-person-hearts' },
+            { name: 'ENT Specialist', icon: 'bi-ear' },
+            { name: 'Orthopedic Surgeon', icon: 'bi-bandaid' },
+            { name: 'Neurologist', icon: 'bi-brain' },
+            { name: 'Child Specialist', icon: 'bi-person-bounding-box' },
+            { name: 'Pulmonologist', icon: 'bi-lungs' },
+            { name: 'Eye Specialist', icon: 'bi-eye' },
+            { name: 'General Physician', icon: 'bi-person-vcard' },
+            { name: 'Cardiologist', icon: 'bi-heart-fill' }
+          ]
+        "
+      >
+        <div class="card doctor-card h-100 text-center shadow-sm border-0 p-3">
+          <div class="icon-box mb-3">
+            <i [class]="'bi ' + spec.icon + ' fs-1'"></i>
+          </div>
+          <p class="fw-semibold mb-0">{{ spec.name }}</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-outline-primary mt-4 px-4" (click)="openSpecialityPopup()">
+      See More
+    </button>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- PATIENT TESTIMONIALS (USING ng-bootstrap) -->
+<!-- ============================= -->
+<section id="patients" class="py-5 bg-light">
+  <div class="container text-center">
+    <h1 class="section-title mb-5">What Our Patients Say</h1>
+
+    <ngb-carousel
+      [showNavigationArrows]="true"
+      [showNavigationIndicators]="true"
+      [interval]="3000"
+      [pauseOnHover]="true"
+    >
+      <ng-template ngbSlide *ngFor="let t of testimonials">
+        <div class="testimonial-slide d-flex align-items-center justify-content-center">
+          <div class="testimonial-img me-4">
+            <img [src]="t.img" [alt]="t.name" width="120" height="120" />
+          </div>
+          <div class="testimonial-text text-start">
+            <blockquote class="blockquote fst-italic mb-2">“{{ t.message }}”</blockquote>
+            <cite>– {{ t.name }}</cite>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-carousel>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- SPECIALITY POPUP -->
+<!-- ============================= -->
+<div id="specialityPopup" class="popup" [class.show]="showPopup">
+  <div class="popup-content">
+    <span class="close" (click)="closeSpecialityPopup()">&times;</span>
+    <h1 class="section-title mb-5">Select a Speciality</h1>
+    <div class="all-specialities">
+      <div class="speciality-card" *ngFor="let s of specialities" (click)="goToSpeciality(s.name)">
+        <i [class]="'bi ' + s.icon + ' fs-2'"></i>
+        <p>{{ s.name }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- SEARCH BY CONDITION -->
+<!-- ============================= -->
+<section id="Conditions" class="py-5">
+  <div class="section">
+    <h1 class="section-title mb-5">Search By Condition</h1>
+    <div class="icon-container">
+      <div class="icon-wrapper" *ngFor="let c of conditions">
+        <div class="icon">
+          <a [href]="'Alldoctorsreal.html?speciality=' + c.speciality">
+            <img [src]="c.img" [alt]="c.name" />
+          </a>
+        </div>
+        <p class="icon-label">{{ c.name }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= -->
+  <!-- DISEASES SECTION -->
+  <!-- ============================= -->
+  <section id="Diseases" class="py-5">
+    <div class="section">
+      <h1 class="section-title mb-5">Diseases</h1>
+      <div class="icon-container">
+        <div class="icon-wrapper" *ngFor="let d of diseases">
+          <div class="icon">
+            <a [href]="'Alldoctorsreal.html?speciality=' + d.speciality">
+              <img [src]="d.img" [alt]="d.name" />
+            </a>
+          </div>
+          <p class="icon-label">{{ d.name }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- CONTACT SECTION -->
+    <!-- ============================= -->
+    <section id="contact" class="py-5">
+      <div class="container">
+        <h1 class="section-title mb-5 text-center">Contact <span class="text-primary">Us</span></h1>
+
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <form>
+              <h3 class="Connectwithus">Connect With Us</h3>
+              <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email Address" required />
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Full Name" required />
+              </div>
+              <div class="mb-3">
+                <input type="tel" class="form-control" placeholder="Contact Number" required />
+              </div>
+              <div class="mb-3">
+                <textarea
+                  class="form-control"
+                  rows="4"
+                  placeholder="Your Message..."
+                  required
+                ></textarea>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary py-2 fw-semibold">Send Message</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <app-footer></app-footer>
+  </section>
+</section>

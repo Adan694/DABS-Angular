@@ -1,0 +1,49 @@
+<app-navbar></app-navbar>
+
+<div class="all-doctors-container container py-5">
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center text-secondary mb-3">Loading doctors...</div>
+
+  <!-- Search Bar -->
+  <div class="search-bar mb-4 d-flex justify-content-center">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="filterDoctors()"
+      class="form-control me-2"
+      placeholder="Search doctor by name or specialty"
+    />
+    <button class="btn btn-success" (click)="filterDoctors()">Search</button>
+  </div>
+
+  <!-- No Doctors -->
+  <p *ngIf="noDoctorsMessage" class="text-center text-danger mb-3">No doctors found.</p>
+
+  <!-- Doctors List -->
+  <div class="doctor-list d-flex flex-wrap justify-content-center gap-4">
+    <div *ngFor="let doctor of filteredDoctors" class="card doctor-card p-3 shadow-sm">
+      <img
+        [src]="'assets/images/' + doctor.photo"
+        class="img-fluid rounded-circle mb-2"
+        alt="{{ doctor.name }}"
+        width="100"
+        height="100"
+      />
+      <h5 class="fw-bold doctor-name">Dr. {{ doctor.name }}</h5>
+      <p class="text-primary specialty">{{ doctor.speciality }}</p>
+      <p><strong>Experience:</strong> {{ doctor.experience }} years</p>
+      <p [ngClass]="{ 'text-success': isAvailable(doctor), 'text-danger': !isAvailable(doctor) }">
+        {{ isAvailable(doctor) ? 'Available' : 'Not Available' }}
+      </p>
+      <p class="text-warning rating">{{ generateStars(doctor.averageRating) }}</p>
+      <div class="d-flex gap-2 mt-2">
+        <a [href]="'booking.html?doctorId=' + doctor._id" class="btn btn-primary flex-fill">Book</a>
+        <a [href]="'doctor.html?id=' + doctor._id" class="btn btn-outline-secondary flex-fill">
+          View Profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
