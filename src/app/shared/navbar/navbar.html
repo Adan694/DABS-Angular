@@ -1,1 +1,37 @@
-<p>navbar works!</p>
+<nav>
+  <div class="logo">
+    <img src="assets/images/Da.png" alt="Logo" />
+    <h1 routerLink="/">DocAssist</h1>
+  </div>
+
+  <div class="hamburger" (click)="togglemenu()">
+    <span [class.active]="menuActive"></span>
+    <span [class.active]="menuActive"></span>
+    <span [class.active]="menuActive"></span>
+  </div>
+  <ul [class.active]="menuActive">
+    <li>
+      <a routerLink="/" (click)="closeMenu()"><i class="fa-solid fa-house"></i> Home</a>
+    </li>
+    <li>
+      <a routerLink="/all-doctors" (click)="closeMenu()"
+        ><i class="fa-solid fa-user-doctor"></i> Find a Doctor</a
+      >
+    </li>
+    <li>
+      <a routerLink="/contactus" (click)="closeMenu()"
+        ><i class="fa-solid fa-envelope"></i> Contact Us</a
+      >
+    </li>
+    <li>
+      <a routerLink="/faqs" (click)="closeMenu()"
+        ><i class="fa-solid fa-circle-question"></i> FAQs</a
+      >
+    </li>
+    <li>
+      <a routerLink="/login" (click)="closeMenu()"
+        ><i class="fa-solid fa-circle-question"></i> Login</a
+      >
+    </li>
+  </ul>
+</nav>

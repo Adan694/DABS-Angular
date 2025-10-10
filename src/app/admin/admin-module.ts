@@ -13,7 +13,9 @@ import { PatientDetail } from './patient-detail/patient-detail';
 import { DoctorAppointments } from './doctor-appointments/doctor-appointments';
 
 @NgModule({
-  declarations: [
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
     AddDoctor,
     AdminAppointments,
     AdminDocList,
@@ -22,12 +24,6 @@ import { DoctorAppointments } from './doctor-appointments/doctor-appointments';
     PatientList,
     PatientDetail,
     DoctorAppointments
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule
   ]
 })
 export class AdminModule {}

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Navbar } from '../components/navbar/navbar';
-import { Footer } from '../components/footer/footer';
 import { DoctorService, Doctor } from '../../core/doctor';
+import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
 
 @Component({
   selector: 'app-all-doctors',
@@ -32,7 +32,7 @@ mockDoctors: Doctor[] = [
     name: 'John Doe',
     speciality: 'Dermatologist',
     experience: 5,
-    photo: 'd3.jpg', // put an image in assets folder
+    photo: 'd3.jpg', 
     averageRating: 4.5,
     availabilitySlots: [
       { date: '2025-10-08', slots: ['10:00 AM', '2:00 PM'] }
@@ -59,21 +59,51 @@ mockDoctors: Doctor[] = [
     availabilitySlots: [
       { date: '2025-10-08', slots: ['11:00 AM', '3:00 PM'] }
     ]
-  }
+  },
+  {
+    _id: '4',
+    name: 'Alina',
+    speciality: 'Dermatologist',
+    experience: 5,
+    photo: 'd4.jpg', 
+    averageRating: 4.5,
+    availabilitySlots: [
+      { date: '2025-10-10', slots: ['10:00 AM', '2:00 PM'] }
+    ]
+  },
+  {
+    _id: '5',
+    name: 'Ayesha',
+    speciality: 'Dermatologist',
+    experience: 5,
+    photo: 'd9.jpg', 
+    averageRating: 4.5,
+    availabilitySlots: [
+      { date: '2025-10-08', slots: ['10:00 AM', '2:00 PM'] }
+    ]
+  },
+  {
+    _id: '6',
+    name: 'Ali',
+    speciality: 'General Physician',
+    experience: 5,
+    photo: 'd5.jpg', 
+    averageRating: 4.5,
+    availabilitySlots: [
+      { date: '2025-10-10', slots: ['10:00 AM', '2:00 PM', '9:00 PM'] }
+    ]
+  },
 ];
 
  ngOnInit(): void {
   this.loading = true;
 
-  // Simulate backend delay
   setTimeout(() => {
     this.doctors = this.mockDoctors;
     this.applySpecialityFilter();
     this.loading = false;
-  }, 500); // half a second delay for testing
+  }, 500); 
 }
-
-
   applySpecialityFilter(): void {
     if (this.specialityParam) {
       this.filteredDoctors = this.doctors.filter(
@@ -123,7 +153,6 @@ mockDoctors: Doctor[] = [
   }
 
   goToSpeciality(speciality: string): void {
-    // navigate with query params
     this.router.navigate([], { queryParams: { speciality } });
   }
 }

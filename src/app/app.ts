@@ -1,16 +1,20 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http'; // <-- Import here
+import { HttpClientModule } from '@angular/common/http'; 
+import { Navbar } from './shared/navbar/navbar';
+import { Footer } from './shared/footer/footer';
 
 @Component({
   selector: 'app-root',
-  standalone: true,       // <-- Must declare standalone component
+  standalone: true,       
   imports: [
     RouterOutlet,
-    HttpClientModule       // <-- Add HttpClientModule here
+    Navbar,
+    Footer,
+    HttpClientModule    
   ],
   templateUrl: './app.html',
-  styleUrls: ['./app.css'] // <-- fix typo: styleUrls (plural)
+  styleUrls: ['./app.css'] 
 })
 export class App {
   protected readonly title = signal('DABS-Frontend');

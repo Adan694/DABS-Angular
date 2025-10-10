@@ -1,18 +1,11 @@
-<app-navbar></app-navbar>
-
-<!-- ============================= -->
 <!-- HERO SECTION -->
-<!-- ============================= -->
-<section class="hero-section container-fluid text-center text-md-start py-5 bg-light">
+<section class="hero-section container-fluid text-md-start py-5 bg-light">
   <div class="container">
     <div class="row align-items-center justify-content-center">
       <div class="col-md-6 mb-4 mb-md-0">
-        <h1 id="heading1" class="display-5 fw-bold mb-3 text-dark">
-          Find Caring Professionals
-          <br />
-          Guided by Experience
-        </h1>
-        <h3 id="heading3" class="text-secondary fw-normal">Trusted Care Teams</h3>
+        <h1 id="heading1">Find Caring Professionals</h1>
+        <h1 id="heading1">Guided by Experience</h1>
+        <h3 id="heading3" class="fw-normal">Trusted Care Teams</h3>
       </div>
       <div class="col-md-6 text-center">
         <img
@@ -25,9 +18,7 @@
   </div>
 </section>
 
-<!-- ============================= -->
 <!-- DOCTORS SECTION -->
-<!-- ============================= -->
 <section id="doctors" class="py-5 bg-white">
   <div class="container text-center">
     <h1 class="section-title mb-5">Consult Best Doctors</h1>
@@ -52,7 +43,11 @@
           ]
         "
       >
-        <div class="card doctor-card h-100 text-center shadow-sm border-0 p-3">
+        <div
+          class="card doctor-card h-100 text-center shadow-sm border-0 p-3"
+          (click)="goToSpeciality(spec.name)"
+          style="cursor: pointer"
+        >
           <div class="icon-box mb-3">
             <i [class]="'bi ' + spec.icon + ' fs-1'"></i>
           </div>
@@ -66,9 +61,23 @@
     </button>
   </div>
 </section>
-
 <!-- ============================= -->
-<!-- PATIENT TESTIMONIALS (USING ng-bootstrap) -->
+<!-- SPECIALITY POPUP -->
+<!-- ============================= -->
+<div id="specialityPopup" class="popup" [class.show]="showPopup">
+  <div class="popup-content">
+    <span class="close" (click)="closeSpecialityPopup()">&times;</span>
+    <h1 class="section-title mb-5">Select a Speciality</h1>
+    <div class="all-specialities">
+      <div class="speciality-card" *ngFor="let s of specialities" (click)="goToSpeciality(s.name)">
+        <i [class]="'bi ' + s.icon + ' fs-2'"></i>
+        <p>{{ s.name }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ============================= -->
+<!-- PATIENT TESTIMONIALS -->
 <!-- ============================= -->
 <section id="patients" class="py-5 bg-light">
   <div class="container text-center">
@@ -96,22 +105,6 @@
 </section>
 
 <!-- ============================= -->
-<!-- SPECIALITY POPUP -->
-<!-- ============================= -->
-<div id="specialityPopup" class="popup" [class.show]="showPopup">
-  <div class="popup-content">
-    <span class="close" (click)="closeSpecialityPopup()">&times;</span>
-    <h1 class="section-title mb-5">Select a Speciality</h1>
-    <div class="all-specialities">
-      <div class="speciality-card" *ngFor="let s of specialities" (click)="goToSpeciality(s.name)">
-        <i [class]="'bi ' + s.icon + ' fs-2'"></i>
-        <p>{{ s.name }}</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ============================= -->
 <!-- SEARCH BY CONDITION -->
 <!-- ============================= -->
 <section id="Conditions" class="py-5">
@@ -128,7 +121,6 @@
       </div>
     </div>
   </div>
-
   <!-- ============================= -->
   <!-- DISEASES SECTION -->
   <!-- ============================= -->
@@ -146,44 +138,42 @@
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- ============================= -->
-    <!-- CONTACT SECTION -->
-    <!-- ============================= -->
-    <section id="contact" class="py-5">
-      <div class="container">
-        <h1 class="section-title mb-5 text-center">Contact <span class="text-primary">Us</span></h1>
+  <!-- ============================= -->
+  <!-- CONTACT SECTION -->
+  <!-- ============================= -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h1 class="section-title mb-5 text-center">Contact <span class="text-primary">Us</span></h1>
 
-        <div class="row justify-content-center">
-          <div class="col-md-6">
-            <form>
-              <h3 class="Connectwithus">Connect With Us</h3>
-              <div class="mb-3">
-                <input type="email" class="form-control" placeholder="Email Address" required />
-              </div>
-              <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Full Name" required />
-              </div>
-              <div class="mb-3">
-                <input type="tel" class="form-control" placeholder="Contact Number" required />
-              </div>
-              <div class="mb-3">
-                <textarea
-                  class="form-control"
-                  rows="4"
-                  placeholder="Your Message..."
-                  required
-                ></textarea>
-              </div>
-              <div class="d-grid">
-                <button type="submit" class="btn btn-primary py-2 fw-semibold">Send Message</button>
-              </div>
-            </form>
-          </div>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <form>
+            <h3 class="Connectwithus">Connect With Us</h3>
+            <div class="mb-3">
+              <input type="email" class="form-control" placeholder="Email Address" required />
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Full Name" required />
+            </div>
+            <div class="mb-3">
+              <input type="tel" class="form-control" placeholder="Contact Number" required />
+            </div>
+            <div class="mb-3">
+              <textarea
+                class="form-control"
+                rows="4"
+                placeholder="Your Message..."
+                required
+              ></textarea>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary py-2 fw-semibold">Send Message</button>
+            </div>
+          </form>
         </div>
       </div>
-    </section>
-
-    <app-footer></app-footer>
+    </div>
   </section>
 </section>

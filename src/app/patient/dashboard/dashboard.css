@@ -8,7 +8,11 @@ section {
     padding: 140px 0 !important;
     animation: fadeInUp 0.8s ease both;
 }
-
+#heading1 div {
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #0f8080;
+}
 /* ---------------------------------------
    HERO SECTION
 --------------------------------------- */
@@ -78,9 +82,8 @@ section {
 
  /* Hero Text */
  .hero-section h1 {
-    width: 1000px;
-    margin-left: -200px;
-     font-size: 54px;
+    width: 100%;
+     font-size: 50px;
      margin-bottom: 15px;
      background: linear-gradient(90deg, #fff, #b2f7ef, #ffffff);
      background-size: 200% 200%;
@@ -90,7 +93,7 @@ section {
      animation: shineText 5s ease infinite;
     font-family: 'Algerian', serif;
         font-weight: 700;
-        text-align: center;
+        text-align:left;
         background-size: 200% auto;
         color: transparent;
         background-clip: text;
@@ -100,6 +103,8 @@ section {
         text-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
         transition: text-shadow 0.4s ease, transform 0.3s ease;
  }
+ 
+
 
  @keyframes shineText {
      0% {
@@ -116,15 +121,14 @@ section {
  }
 
  .hero-section img {
-     width: 600px;
+     width: 200px;
+     color: #000;
      height: auto;
-     opacity: 0;
      transform: translateY(20px) scale(1);
      animation: fadeIn 0.8s ease forwards;
      animation-delay: 0.3s;
      transition: transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease, box-shadow 0.5s ease;
      z-index: 1;
-     margin-left: 100px;
  }
 
  .hero-section img:hover {
@@ -360,6 +364,7 @@ section {
         text-decoration: none;
         box-shadow: 0 4px 15px rgba(0, 150, 136, 0.4);
         transition: all 0.3s ease;
+        margin-bottom: 50px;
 }
 .btn:hover {
     background: linear-gradient(135deg,
@@ -395,7 +400,7 @@ section {
 .popup {
     display: none;
     position: fixed;
-    top: 0;
+    top: 40px;
     left: 0;
     width: 100%;
     height: 100%;
@@ -521,39 +526,12 @@ section {
     margin-top: 20px;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .speciality-list {
-        grid-template-columns: repeat(4, 1fr);
-        /* Tablets */
-    }
-
-    .all-specialities {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .speciality-list {
-        grid-template-columns: repeat(2, 1fr);
-        /* Small tablets / big phones */
-    }
-
-    .all-specialities {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .popup-content {
-        width: 95%;
-        padding: 20px;
-    }
-}
 /* ---------------------------------------
    PATIENT TESTIMONIALS
 --------------------------------------- */
 #patients {
         background: linear-gradient(180deg, #e7f0ef 0%, #ffffff 100%);
-    width: 90%;
+        width: 90%;
         max-width: 1400px;
         height: 620px;
         margin: 60px auto;
@@ -562,7 +540,7 @@ section {
         border-radius: 16px;
         padding: 20px;
         margin-top: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 50px;
 }
 
 #patients h1 {
@@ -769,9 +747,11 @@ section {
 --------------------------------------- */
 #contact {
     background: linear-gradient(135deg, #e7f0ef, #ffffff);
-    padding: 100px 0;
+    padding: 50px 0;
     position: relative;
     overflow: hidden;
+    margin-bottom: -200px;
+    margin-top: -200px;
 }
 
 #contact::before {
@@ -779,8 +759,8 @@ section {
     position: absolute;
     top: -50px;
     left: -50px;
-    width: 300px;
-    height: 300px;
+    width: 00px;
+    height: 100px;
     background: rgba(15, 128, 128, 0.1);
     border-radius: 50%;
     z-index: 0;
@@ -868,54 +848,305 @@ section {
         box-shadow: 0 6px 18px rgba(0, 150, 136, 0.6);
         transform: scale(1.05);
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-    #contact {
-        padding: 80px 20px;
-    }
-
-    #contact form {
-        padding: 40px 25px;
-    }
-}
-.Connectwithus{
-    color: white;
-    text-align: center;
-    font: 25px;
-    margin-bottom: 15px;
-    font-weight: 100;
-    text-transform: uppercase;
-}
 /* ---------------------------------------
-   RESPONSIVE
+   RESPONSIVE DESIGN MEDIA QUERIES
 --------------------------------------- */
-@media (max-width: 992px) {
-    .hero-section {
-        text-align: center;
+
+/* ========== LARGE SCREENS (1200px and above) ========== */
+@media (min-width: 1200px) {
+    .hero-section h1 {
+        font-size: 60px;
+        width: 900px;
+        margin-left: 0;
     }
 
     .hero-section img {
-        margin-top: 25px;
+        width: 550px;
+        margin-left: 50px;
+    }
+
+    .speciality-list {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .all-specialities {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ========== MEDIUM SCREENS (TABLETS / SMALL LAPTOPS) ========== */
+@media (max-width: 1199px) and (min-width: 768px) {
+
+    /* HERO SECTION */
+    .hero-section {
+        flex-direction: column;
+        height: auto;
+        padding: 100px 20px;
+        text-align: center;
+    }
+
+    .hero-section h1 {
+        font-size: 46px;
+        margin: 0 auto 30px;
+        width: 90%;
+    }
+
+    .hero-section img {
+        width: 450px;
+        margin: 0 auto;
+    }
+
+    /* DOCTORS SECTION */
+    #doctors {
+        padding: 60px 20px;
+    }
+
+    .doctor-card {
+        min-height: 160px;
+    }
+
+    /* SPECIALITIES */
+    .speciality-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .all-specialities {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* PATIENT TESTIMONIALS */
+    #patients {
+        height: auto;
+        padding: 60px 20px;
+    }
+
+    .testimonial-slide {
+        flex-direction: column;
+    }
+
+    .testimonial-img img {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    /* CONTACT SECTION */
+    #contact form {
+        width: 90%;
+        padding: 40px 30px;
+    }
+}
+
+/* ========== SMALL SCREENS (MOBILE DEVICES) ========== */
+@media (max-width: 767px) {
+
+    /* GENERAL */
+    section {
+        padding: 80px 20px !important;
+    }
+
+    /* HERO SECTION */
+    .hero-section {
+        flex-direction: column;
+        height: auto;
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .hero-section h1 {
+        font-size: 34px;
+        width: 100%;
+text-align: center;
+justify-content: center;    }
+
+    .hero-section h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    .hero-section img {
+        width: 280px;
+        margin: 20px auto 0;
+        transform: none;
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    /* DOCTORS SECTION */
+    #doctors {
+        padding: 40px 15px;
+    }
+
+    .doctor-card {
+        width: 100%;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* SPECIALITIES GRID */
+    .speciality-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .all-specialities {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* TESTIMONIALS */
+    #patients {
+        width: 95%;
+        height: auto;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .testimonial-slide {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .testimonial-text blockquote {
+        font-size: 1rem;
+        padding: 15px;
+    }
+
+    /* ICON SECTION */
+    .icon-container {
+        gap: 10px;
+    }
+
+    .icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .icon img {
+        width: 80px;
+        height: 80px;
+    }
+
+    /* CONTACT SECTION */
+    #contact {
+        padding: 60px 20px;
+    }
+
+    #contact h1 {
+        font-size: 1.8rem;
+        margin-bottom: 40px;
+    }
+
+    #contact form {
+        padding: 30px 20px;
+        width: 100%;
+    }
+
+    #contact button {
+        width: 100%;
+        height: 45px;
+        font-size: 16px;
+    }
+}
+
+/* ========== EXTRA SMALL DEVICES (under 480px) ========== */
+@media (max-width: 480px) {
+
+    .hero-section h1 {
+        font-size: 28px;
+    }
+
+    .hero-section h3 {
+        font-size: 22px;
+    }
+
+    .btn {
+        width: 160px;
+        font-size: 15px;
+        padding: 10px 20px;
+        margin-bottom: 140px;
+    }
+
+    .speciality-card {
+        width: 120px;
+        padding: 15px 10px;
+    }
+
+    .testimonial-text blockquote {
+        font-size: 0.95rem;
+    }
+
+    #contact button {
+        font-size: 15px;
+        height: 40px;
+    }
+}
+/* --- 🔧 MOBILE FIXES FOR POPUP --- */
+@media (max-width: 768px) {
+    .popup {
+        position: fixed;
+        inset: 0;
+        z-index: 3000 !important;
+        /* ensure on top of navbar & hero */
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        pointer-events: all !important;
+        /* allow touch */
+    }
+
+    .popup-content {
+        width: 95%;
+        max-height: 85vh;
+        overflow-y: auto;
+        z-index: 3100;
+        position: relative;
+        touch-action: none;
+    }
+
+    /* ensure no elements behind can block touch */
+    body.popup-open,
+    html.popup-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
+}
+/* ====== FIX CONTACT SECTION OVERLAP ON SMALL SCREENS ====== */
+@media (max-width: 1024px) {
+    #contact {
+        margin-top: -100px;
+        margin-bottom: -100px;
     }
 }
 
 @media (max-width: 768px) {
-    h1.section-title {
-        font-size: 2rem;
+    #contact {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 60px 20px !important;
     }
 
-    .doctor-card {
-        min-height: 180px;
+    #contact form {
+        margin-bottom: 40px;
     }
 }
 
-@media (max-width: 576px) {
-    section {
-        padding: 80px 0;
+@media (max-width: 480px) {
+    #contact {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 50px 15px !important;
     }
 
-    .hero-section h1 {
-        font-size: 1.75rem;
+    #contact form {
+        padding: 25px 15px;
     }
 }

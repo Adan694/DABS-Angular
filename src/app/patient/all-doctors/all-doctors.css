@@ -1,22 +1,14 @@
-html,
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: blue;
-}
 
 .all-doctors-container {
     padding-top: 120px;
     min-height: calc(100vh - 120px);
-    background-color: transparent;
+    background: linear-gradient(135deg, #e7f0ef, #ffffff);
+    max-width: 3000px;
 }
-/* Optional: if using a container for all content */
+
 .all-doctors-container {
     min-height: 100vh;
-    /* Ensure it covers the full screen */
     padding-top: 120px;
-    /* Space for fixed navbar */
 }
 .search-bar{
     display: flex;
@@ -29,10 +21,9 @@ body {
         width: 100%;
         max-width: 600px;
         margin-top: 80px;
-        margin-left: 190px;
+        margin-left: 390px;
 }
 
-/* Search Bar */
 .search-bar input {
     flex-grow: 1;
         width: 70%;
@@ -52,7 +43,6 @@ width: 20%;
     cursor: pointer;}
 
 
-/* Doctor Cards */
  .doctor-list {
      display: flex;
      flex-wrap: wrap;
@@ -64,7 +54,7 @@ width: 20%;
      display: flex;
      flex-direction: column;
      align-items: center;
-     width: 300px;
+     width: 350px;
      padding: 20px;
      background-color: #fff;
      border-radius: 12px;
@@ -129,7 +119,6 @@ width: 20%;
      margin-bottom: 12px;
  }
 
- /* Buttons */
  .doctor-card .btn {
      font-size: 14px;
      font-weight: 600;
@@ -159,11 +148,77 @@ width: 20%;
      background-color: #0f8080;
      color: #fff;
  }
+@media (max-width: 1200px) {
+    .search-bar {
+        max-width: 500px;
+        margin: 70px auto 30px auto;
+    }
 
-/* Responsive */
+    .doctor-card {
+        width: 240px;
+    }
+}
+
 @media (max-width: 900px) {
+    .search-bar {
+        flex-direction: row;
+        max-width: 90%;
+        margin: 70px auto;
+    }
+
+    .doctor-list {
+        justify-content: space-around;
+    }
+
     .doctor-card {
         width: 45%;
+        margin-bottom: 20px;
+    }
+
+    .doctor-card img {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+@media (max-width: 768px) {
+    .all-doctors-container {
+        padding-top: 100px;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+        margin: 60px auto;
+        padding: 10px;
+    }
+
+    .search-bar input,
+    .search-bar button {
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .doctor-list {
+        gap: 15px;
+    }
+
+    .doctor-card {
+        width: 80%;
+        max-width: 350px;
+    }
+
+    .doctor-name {
+        font-size: 18px;
+    }
+
+    .specialty {
+        font-size: 13px;
+    }
+
+    .rating {
+        font-size: 14px;
     }
 }
 
@@ -173,13 +228,53 @@ width: 20%;
     }
 
     .search-bar {
-        flex-direction: column;
-        gap: 8px;
-        align-items: center;
+        width: 90%;
+        margin-top: 90px;
     }
 
-    .search-bar input,
-    .search-bar button {
+    .doctor-card img {
+        width: 85px;
+        height: 85px;
+    }
+
+    .doctor-name {
+        font-size: 17px;
+    }
+
+    .specialty,
+    .experience,
+    .availability {
+        font-size: 13px;
+    }
+
+    .doctor-card .btn {
+        font-size: 13px;
+        padding: 6px 14px;
+    }
+}
+
+@media (max-width: 400px) {
+    .search-bar {
+        width: 95%;
+        padding: 8px;
+    }
+
+    .doctor-card {
         width: 100%;
+        padding: 15px;
+    }
+
+    .doctor-card img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .doctor-name {
+        font-size: 16px;
+    }
+
+    .doctor-card .btn {
+        font-size: 12px;
+        padding: 6px 12px;
     }
 }

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Navbar } from '../components/navbar/navbar';
-import { Footer } from '../components/footer/footer';
+
 import { CommonModule } from '@angular/common';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router'; // <-- import Router
+import { Footer } from '../../shared/footer/footer';
+import { Navbar } from '../../shared/navbar/navbar';
 
 
 @Component({
@@ -84,9 +85,7 @@ diseases = [
     this.animateWords('#heading3', 300);
   }
 
-  // --------------------------
   // Popup methods
-  // --------------------------
   openSpecialityPopup() {
     this.showPopup = true;
     document.body.style.overflow = 'hidden';
@@ -97,12 +96,10 @@ diseases = [
     document.body.style.overflow = 'auto';
   }
 goToSpeciality(speciality: string) {
-  this.router.navigate(['/all-doctors', speciality]);
+  this.router.navigate(['/all-doctors'], { queryParams: { speciality } });
 }
 
-  // --------------------------
   // Navbar
-  // --------------------------
   updateNavbar() {
     const userRole = localStorage.getItem('userRole');
     const profileMenu = document.getElementById('profileMenu');
@@ -117,9 +114,7 @@ goToSpeciality(speciality: string) {
     }
   }
 
-  // --------------------------
   // Animations
-  // --------------------------
   animateWords(selector: string, delay: number = 300) {
     const el = document.querySelector<HTMLElement>(selector);
     if (!el) return;

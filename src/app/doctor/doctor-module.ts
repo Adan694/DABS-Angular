@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DocPanel } from './doc-panel/doc-panel';
@@ -10,13 +9,12 @@ import { DocFeedback } from './doc-feedback/doc-feedback';
 import { DocProfile } from './doc-profile/doc-profile';
 
 @NgModule({
-  declarations: [
-    DocPanel,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule,
+     DocPanel,
     DocAppointment,
     DocAvailability,
     DocFeedback,
     DocProfile
-  ],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule]
+  ]
 })
 export class DoctorModule {}

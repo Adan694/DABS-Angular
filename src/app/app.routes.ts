@@ -1,21 +1,21 @@
-// // app.routes.ts
-// import { Routes } from '@angular/router';
-// import { AllDoctors } from './patient/all-doctors/all-doctors';
-// export const routes: Routes = [
-//   {
-//     path: 'patient',
-//     loadChildren: () =>
-//       import('./patient/patient-routes').then(m => m.routes)
-//   },
-//     { path: 'all-doctors/:speciality', component: AllDoctors },
-//    { path: 'all-doctors', component: AllDoctors },
-//   { path: '', redirectTo: '/all-doctors', pathMatch: 'full' }
-// ];
-import { NgModule } from '@angular/core';
+// import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { Dashboard } from './patient/dashboard/dashboard';
+import { AllDoctors } from './patient/all-doctors/all-doctors';
+import { ContactUs } from './patient/contact-us/contact-us';
+import { Faqs } from './patient/faqs/faqs';
 
-const routes: Routes = [
+export const routes: Routes = [
+   {
+    path: 'patient',
+    component: Dashboard  
+  },
   { path: '', redirectTo: 'patient', pathMatch: 'full' },
+  { path: 'all-doctors/:speciality', component: AllDoctors },
+ { path: 'all-doctors', component: AllDoctors },
+  { path: '', redirectTo: '/all-doctors', pathMatch: 'full' },
+   { path: 'contactus', component: ContactUs },
+  { path: 'faqs', component: Faqs },
   {
     path: 'admin',
     loadChildren: () =>
@@ -39,9 +39,9 @@ const routes: Routes = [
   { path: '**', redirectTo: '' }
 ];
 
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
+// @NgModule({
+//   imports: [RouterModule.forRoot(routes)],
+//   exports: [RouterModule]
+// })
 export class AppRoutingModule {}
 
