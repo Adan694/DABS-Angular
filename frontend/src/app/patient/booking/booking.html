@@ -1,0 +1,102 @@
+<app-navbar></app-navbar>
+
+<div class="container my-5">
+  <h2 class="text-center heading mb-4">Book an Appointment</h2>
+
+  <!-- Message -->
+  <!-- <div *ngIf="message" class="alert alert-info">{{ message }}</div> -->
+
+  <!-- No slots -->
+  <div *ngIf="availabilitySlots.length === 0" class="text-center">
+    <p>No availability slots.</p>
+    <button class="btn btn-primary" (click)="loadAvailability()">Refresh</button>
+  </div>
+
+  <!-- Slots available -->
+  <div *ngIf="availabilitySlots.length > 0">
+    <h5>Select Date:</h5>
+    <div class="dates-container mb-3">
+      <div
+        *ngFor="let slot of availabilitySlots"
+        class="time-slot"
+        [ngClass]="{ selected: selectedDate === slot.date }"
+        (click)="selectDate(slot.date)"
+      >
+        {{ slot.date }}
+      </div>
+    </div>
+
+    <h5>Select Time:</h5>
+    <div id="slots-container" class="mb-3">
+      <div
+        *ngFor="let time of selectedSlot?.slots || []"
+        class="time-slot"
+        [ngClass]="{ selected: selectedTime === time }"
+        (click)="selectTime(time)"
+      >
+        {{ time }}
+      </div>
+    </div>
+
+    <!-- Book Appointment button -->
+    <button
+      type="button"
+      class="book-btn"
+      [disabled]="!selectedDate || !selectedTime"
+      (click)="openModal()"
+    >
+      Book Appointment
+    </button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" [class.show]="showModal">
+  <div class="modal-content">
+    <h2>Patient Info</h2>
+    <div *ngIf="message && message.trim() !== ''" class="alert alert-danger">{{ message }}</div>
+
+    <form>
+      <!-- Show selected date and time -->
+      <div class="form-group">
+        <label>Date</label>
+        <input type="text" [value]="selectedDate" readonly />
+      </div>
+      <div class="form-group">
+        <label>Time</label>
+        <input type="text" [value]="selectedTime" readonly />
+      </div>
+
+      <!-- Patient info fields -->
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="patientName" name="name" />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" [(ngModel)]="patientPhone" name="phone" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="patientEmail" name="email" />
+      </div>
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" [(ngModel)]="patientAge" name="age" />
+      </div>
+      <div class="form-group">
+        <label>Issue / Problem</label>
+        <textarea [(ngModel)]="patientIssue" name="issue"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeModal()">Cancel</button>
+        <button type="button" class="book-btn" (click)="confirmBooking()" [disabled]="loading">
+          {{ loading ? 'Booking...' : 'Book Appointment' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-footer></app-footer>

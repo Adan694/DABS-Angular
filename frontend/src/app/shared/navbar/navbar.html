@@ -1,0 +1,55 @@
+<nav>
+  <div class="logo">
+    <img src="assets/images/Da.png" alt="Logo" />
+    <h1 routerLink="/patient">DocAssist</h1>
+  </div>
+
+  <div class="hamburger" (click)="togglemenu()">
+    <span [class.active]="menuActive"></span>
+    <span [class.active]="menuActive"></span>
+    <span [class.active]="menuActive"></span>
+  </div>
+
+  <ul [class.active]="menuActive">
+    <li>
+      <a routerLink="/patient" (click)="closeMenu()"> <i class="fa-solid fa-house"></i> Home </a>
+    </li>
+
+    <li>
+      <a routerLink="/patient/all-doctors" (click)="closeMenu()">
+        <i class="fa-solid fa-user-doctor"></i> Find a Doctor
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/patient/contactus" (click)="closeMenu()">
+        <i class="fa-solid fa-envelope"></i> Contact Us
+      </a>
+    </li>
+
+    <li>
+      <a routerLink="/patient/faqs" (click)="closeMenu()">
+        <i class="fa-solid fa-circle-question"></i> FAQs
+      </a>
+    </li>
+
+    <!-- Login -->
+    <li *ngIf="!isLoggedIn">
+      <a routerLink="/login" (click)="closeMenu()">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+    </li>
+
+    <!-- Account Dropdown -->
+    <li *ngIf="isLoggedIn" class="dropdown">
+      <a href="javascript:void(0)" class="profile-icon" (click)="toggleDropdown($event)">
+        <i class="fa-solid fa-user"></i> Account
+      </a>
+      <ul class="dropdown-menu" [class.active]="dropdownActive">
+        <li><a routerLink="/patient/profile" (click)="closeMenu()">My Profile</a></li>
+        <li><a routerLink="/patient/appointments" (click)="closeMenu()">My Appointments</a></li>
+        <li><a href="javascript:void(0)" (click)="logout()">Logout</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,59 @@
+<app-navbar></app-navbar>
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="errorMessage">{{ errorMessage }}</div>
+<h3 class="Heading">Profile</h3>
+
+<div *ngIf="doctor" class="profile-card">
+  <img [src]="'http://localhost:3000/uploads/' + doctor.photo" [alt]="doctor.name" />
+  <h2>Dr. {{ doctor.name }}</h2>
+  <p class="availability" [ngClass]="{ available: isAvailable, unavailable: !isAvailable }">
+    {{ isAvailable ? 'Available' : 'Not Available' }}
+  </p>
+  <p><strong>Specialty:</strong> {{ doctor.speciality }}</p>
+  <p><strong>Experience:</strong> {{ doctor.experience }} years</p>
+  <p><strong>Degree:</strong> {{ doctor.degree }}</p>
+  <p><strong>Fees:</strong> Rs. {{ doctor.fees }}</p>
+  <p><strong>About:</strong> {{ doctor.about }}</p>
+  <p *ngIf="doctor.qualifications"><strong>Qualifications:</strong> {{ doctor.qualifications }}</p>
+  <p *ngIf="doctor.services"><strong>Services:</strong> {{ doctor.services }}</p>
+  <p *ngIf="doctor.conditions"><strong>Conditions Treated:</strong> {{ doctor.conditions }}</p>
+  <p *ngIf="doctor.memberships"><strong>Memberships:</strong> {{ doctor.memberships }}</p>
+  <p *ngIf="doctor.locations"><strong>Locations:</strong> {{ doctor.locations }}</p>
+
+  <a class="book-button" [routerLink]="['/booking']" [queryParams]="{ doctorId: doctor._id }"
+    >Book Appointment</a
+  >
+</div>
+
+<h3 class="Heading">Feedback:</h3>
+<div id="feedback-list">
+  <div *ngFor="let feedback of feedbackList" class="feedback-item">
+    <div class="feedback-avatar">
+      {{ getInitials(feedback.userName) }}
+    </div>
+    <div class="feedback-content">
+      <h4>{{ feedback.userName || 'Anonymous' }}</h4>
+      <div class="star-rating">
+        {{ '★'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating) }}
+      </div>
+      <p *ngIf="editingFeedbackId !== feedback._id">{{ feedback.comment }}</p>
+      <div *ngIf="editingFeedbackId === feedback._id">
+        <label>Rating:</label>
+        <input type="number" [(ngModel)]="editedRating" min="1" max="5" /><br />
+        <label>Comment:</label>
+        <textarea [(ngModel)]="editedComment"></textarea><br />
+        <button class="book-button" (click)="submitEditedFeedback(feedback._id)">Save</button>
+        <button class="book-button" style="background: #6c757d" (click)="cancelEditFeedback()">
+          Cancel
+        </button>
+      </div>
+      <small><strong>Submitted:</strong> {{ formatDateFromNow(feedback.timestamp) }}</small>
+
+      <div class="feedback-actions" *ngIf="editingFeedbackId !== feedback._id">
+        <button *ngIf="patientId === feedback.patientId || userRole === 'admin'">Edit</button>
+        <button class="delete" (click)="deleteFeedback(feedback._id)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>

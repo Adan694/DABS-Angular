@@ -1,0 +1,106 @@
+<div class="login-background"></div>
+
+<div class="container">
+  <input type="checkbox" id="check" [(ngModel)]="isSignup" hidden />
+
+  <div class="login form" *ngIf="!isSignup">
+    <header>Login</header>
+    <form (ngSubmit)="onLogin()">
+      <select [(ngModel)]="loginData.role" name="role" required>
+        <option value="" disabled selected>Select your role</option>
+        <option value="admin">Admin</option>
+        <option value="doctor">Doctor</option>
+        <option value="patient">Patient</option>
+      </select>
+
+      <input
+        type="email"
+        [(ngModel)]="loginData.email"
+        name="email"
+        placeholder="Enter your email"
+        required
+      />
+      <div class="error">{{ errors.email }}</div>
+
+      <input
+        type="password"
+        [(ngModel)]="loginData.password"
+        name="password"
+        placeholder="Enter your password"
+        required
+      />
+      <div class="error">{{ errors.password }}</div>
+
+      <a routerLink="/forgotpassword">Forgot password?</a>
+      <input type="submit" class="button" value="Login" />
+
+      <div class="signup">
+        Don't have an account? <label (click)="isSignup = true">Signup</label>
+      </div>
+    </form>
+  </div>
+
+  <div class="registration form" *ngIf="isSignup">
+    <header>Signup</header>
+    <form (ngSubmit)="onSignup()">
+      <input
+        type="text"
+        [(ngModel)]="signupData.name"
+        name="name"
+        placeholder="Enter your name"
+        required
+      />
+      <div class="error">{{ errors.name }}</div>
+
+      <input
+        type="text"
+        [(ngModel)]="signupData.phone"
+        name="phone"
+        placeholder="Enter your phone number"
+        required
+      />
+      <div class="error">{{ errors.phone }}</div>
+
+      <input
+        type="text"
+        [(ngModel)]="signupData.cnic"
+        name="cnic"
+        placeholder="Enter your CNIC"
+        required
+      />
+      <div class="error">{{ errors.cnic }}</div>
+
+      <input
+        type="email"
+        [(ngModel)]="signupData.email"
+        name="email"
+        placeholder="Enter your email"
+        required
+      />
+      <div class="error">{{ errors.email }}</div>
+
+      <input
+        type="password"
+        [(ngModel)]="signupData.password"
+        name="password"
+        placeholder="Create password"
+        required
+      />
+      <div class="error">{{ errors.password }}</div>
+
+      <input
+        type="password"
+        [(ngModel)]="signupData.confirmPassword"
+        name="confirmPassword"
+        placeholder="Confirm password"
+        required
+      />
+      <div class="error">{{ errors.confirm }}</div>
+
+      <input type="submit" class="button" value="Signup" />
+      <div class="signup">
+        Already have an account? <label (click)="isSignup = false">Login</label>
+      </div>
+    </form>
+  </div>
+</div>
