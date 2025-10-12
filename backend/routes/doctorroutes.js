@@ -1,0 +1,34 @@
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const { updateDoctorAvailable, addDoctor, getDoctors, updateDoctor, deleteDoctor, getDoctorById, updateDoctorAvailability, getDoctorAvailability, deleteDoctorAvailabilitySlot , updateAvailabilityOrder} = require('../Controllers/doctorcontroller');
+const auth = require('../middlewares/auth');
+
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
+
+router.post('/add', upload.single('photo'), addDoctor);
+router.get('/', getDoctors);
+router.put('/:id', upload.single('photo'), updateDoctor);
+router.delete('/:id', deleteDoctor);
+router.get('/alldoctors', getDoctors);
+router.get('/:id', getDoctorById); 
+router.put('/:id/availability', updateDoctorAvailability);  
+router.get('/:id/availability', getDoctorAvailability);
+router.delete("/:id/availability/:date", deleteDoctorAvailabilitySlot);
+router.put('/:id/availability/order', updateAvailabilityOrder);
+router.put('/:id/status', updateDoctorAvailable);
+
+
+
+
+module.exports = router;

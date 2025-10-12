@@ -1,0 +1,327 @@
+const Doctor = require('../models/doctors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Feedback = require('../models/feedback');
+const Booking = require('../models/booking');
+const notifyAll = require('../Utils/notifyAll');
+const Notification = require('../models/Notification');
+const { User } = require('../models/users');
+
+
+
+const addDoctor = async (req, res) => {
+  try {
+    console.log('Request body:', req.body);
+    console.log('Uploaded file:', req.file);
+
+    const { name, email, password, speciality, degree, experience, about } = req.body;
+    if (!name || !email || !password || !speciality || !degree || !experience || !about) {
+      return res.status(400).json({ success: false, message: 'All required fields must be filled.' });
+    }
+    const existingDoctor = await Doctor.findOne({ email });
+    if (existingDoctor) {
+      return res.status(400).json({ success: false, message: 'Doctor already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newDoctor = new Doctor({
+      name,
+      email,
+      password: hashedPassword,
+      speciality,
+      degree,
+      experience,
+      about,
+      photo: req.file?.filename || null,
+      available: req.body.available === 'true',
+      role: req.body.role || 'doctor' 
+    });
+
+    await newDoctor.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Doctor added successfully',
+      doctor: newDoctor
+    });
+
+  } catch (err) {
+    console.error("Error adding doctor:", err);
+    res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+};
+
+const getDoctors = async (req, res) => {
+  try {
+      const doctors = await Doctor.find();
+      res.status(200).json(doctors);
+  } catch (error) {
+      console.error('Error fetching doctors:', error);
+      res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+const getDoctorById = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found.' });
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    doctor.availabilitySlots = doctor.availabilitySlots.filter(slot => {
+      return new Date(slot.date).toISOString().split('T')[0] >= today;
+    });
+
+    const bookings = await Booking.find({ doctorId: doctor._id });
+    const formatDate = (d) => new Date(d).toISOString().split('T')[0];
+    const filteredAvailability = doctor.availabilitySlots
+      .map(slot => {
+        const availableTimes = slot.slots.filter(time => {
+          const isBooked = bookings.some(booking =>
+            formatDate(booking.date) === formatDate(slot.date) &&
+            booking.time?.trim() === time.trim()
+          );
+          return !isBooked;
+        });
+
+        return {
+          date: slot.date,
+          slots: availableTimes
+        };
+      })
+      .filter(slot => slot.slots.length > 0);
+
+    const feedback = await Feedback.find({ doctorId: doctor._id });
+    res.status(200).json({
+      ...doctor.toObject(),
+      availabilitySlots: filteredAvailability,
+      feedback: feedback.length ? feedback : [],
+    });
+
+  } catch (error) {
+    console.error('Error fetching doctor:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+const updateDoctor = async (req, res) => {
+  try {
+    const updateFields = req.body;
+    const { currentPassword, newPassword } = req.body;
+
+    const doctor = await Doctor.findById(req.params.id);
+    if (!doctor) return res.status(404).json({ message: 'Doctor not found.' });
+
+    if (currentPassword && newPassword) {
+        const isMatch = await bcrypt.compare(currentPassword, doctor.password);
+        if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect.' });
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        updateFields.password = hashedPassword;
+    }
+
+    delete updateFields.email; 
+
+    if (req.file) updateFields.photo = req.file.filename;
+
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ message: 'Profile updated successfully.', doctor: updatedDoctor });
+  } catch (error) {
+    console.error('Error updating doctor profile:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+const deleteDoctor = async (req, res) => {
+    try {
+        const doctor = await Doctor.findById(req.params.id);
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found.' });
+        }
+
+        // Find all bookings of this doctor
+        const affectedBookings = await Booking.find({ doctorId: req.params.id });
+
+        // Cancel all bookings
+        await Booking.updateMany({ doctorId: req.params.id }, { status: 'Cancelled' });
+
+        // Notify patients about cancelled bookings
+        for (const booking of affectedBookings) {
+            const patient = await User.findById(booking.patientId);
+            if (patient) {
+                const message = `Your appointment with Dr. ${doctor.name} on ${new Date(booking.date).toLocaleDateString()} at ${booking.time} has been cancelled.`;
+
+                await Notification.create({
+                    userId: patient._id,
+                    message
+                });
+
+                await notifyAll({
+                    patient,
+                    doctor: null,
+                    admin: null,
+                    message
+                });
+            }
+        }
+        const doctorMessage = `Your account has been removed from the system, and all your appointments have been cancelled.`;
+        await Notification.create({
+            userId: doctor._id,
+            message: doctorMessage
+        });
+
+        await notifyAll({
+            patient: null,
+            doctor,
+            admin: null,
+            message: doctorMessage
+        });
+
+        await Doctor.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            message: 'Doctor deleted, appointments cancelled, and notifications sent to patients and doctor.'
+        });
+    } catch (error) {
+        console.error('Error deleting doctor:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
+const updateDoctorAvailability = async (req, res) => {
+  try {
+    const doctorId = req.params.id;
+    const { availabilitySlots: newSlots } = req.body;
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    doctor.availabilitySlots = newSlots.map(newSlot => ({
+      date: new Date(newSlot.date).toISOString().split("T")[0],
+      slots: newSlot.slots.map(s => s.trim())
+    }));
+
+    doctor.markModified("availabilitySlots");
+    await doctor.save();
+
+    res.status(200).json({ availabilitySlots: doctor.availabilitySlots });
+  } catch (error) {
+    console.error("Error updating availability:", error);
+    res.status(500).json({ message: "Failed to update availability" });
+  }
+};
+
+const getDoctorAvailability = async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found' }); 
+    }
+    const today = new Date().toISOString().split('T')[0]; 
+    const futureSlots = doctor.availabilitySlots.filter(slot => slot.date >= today);
+    
+    res.json({ availabilitySlots: futureSlots });
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' }); 
+  }
+};
+
+const deleteDoctorAvailabilitySlot = async (req, res) => {
+  try {
+    const doctorId = req.params.id;
+    const slotDate = req.params.date; 
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+
+    doctor.availabilitySlots = doctor.availabilitySlots.filter(slot => {
+      const slotDateOnly = new Date(slot.date).toISOString().split('T')[0];
+      return slotDateOnly !== slotDate;
+    });
+
+    await doctor.save();
+
+    res.status(200).json({
+      message: "Availability slot deleted",
+      availabilitySlots: doctor.availabilitySlots
+    });
+  } catch (error) {
+    console.error("Error deleting slot:", error);
+    res.status(500).json({ message: "Failed to delete availability slot" });
+  }
+};
+
+const updateAvailabilityOrder = async (req, res) => {
+  try {
+    const doctorId = req.params.id;
+    const newOrder = req.body.order; 
+
+    if (!Array.isArray(newOrder)) {
+      return res.status(400).json({ message: "Invalid order format" });
+    }
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+
+    const slotsMap = {};
+    doctor.availabilitySlots.forEach(slot => {
+      slotsMap[slot.date] = slot;
+    });
+    const reorderedSlots = [];
+    newOrder.forEach(date => {
+      if (slotsMap[date]) {
+        reorderedSlots.push(slotsMap[date]);
+      }
+    });
+
+    doctor.availabilitySlots.forEach(slot => {
+      if (!newOrder.includes(slot.date)) {
+        reorderedSlots.push(slot);
+      }
+    });
+
+    doctor.availabilitySlots = reorderedSlots;
+    await doctor.save();
+
+    res.status(200).json({ message: "Availability order updated successfully" });
+  } catch (error) {
+    console.error("Error updating availability order:", error);
+    res.status(500).json({ message: "Failed to update availability order" });
+  }
+};
+
+const updateDoctorAvailable = async (req, res) => {
+    try {
+        const { available } = req.body;
+        const doctor = await Doctor.findByIdAndUpdate(
+            req.params.id,
+            { available },
+            { new: true }
+        );
+
+        if (!doctor) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
+
+        res.json({
+            message: `Availability updated to ${available ? 'Available' : 'Unavailable'}`,
+            doctor
+        });
+    } catch (error) {
+        console.error("Error updating availability:", error);
+        res.status(500).json({ error: "Server error updating availability" });
+    }
+};
+
+
+module.exports = { updateDoctorAvailable, addDoctor, getDoctors, updateDoctor, deleteDoctor, getDoctorById, updateDoctorAvailability, getDoctorAvailability, deleteDoctorAvailabilitySlot,updateAvailabilityOrder,};

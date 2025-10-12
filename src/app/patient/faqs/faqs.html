@@ -1,8 +1,0 @@
-<h1 class="FAQ">Frequently Asked Questions</h1>
-
-<div class="faq-container">
-  <div class="faq" *ngFor="let item of faqs">
-    <h2 (click)="toggleFAQ(item)">{{ item.question }}</h2>
-    <p *ngIf="item.open">{{ item.answer }}</p>
-  </div>
-</div>
