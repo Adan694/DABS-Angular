@@ -2,15 +2,13 @@ import { Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
-import { Router } from '@angular/router'; // <-- import Router
+import { Router, RouterLink } from '@angular/router';
 import { Footer } from '../../shared/footer/footer';
 import { Navbar } from '../../shared/navbar/navbar';
-
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [Navbar, Footer, CommonModule, NgbCarouselModule],
+  imports: [Navbar, Footer, CommonModule, NgbCarouselModule, RouterLink],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -20,8 +18,6 @@ export class Dashboard implements OnInit {
   constructor(private router: Router) { }
  specialities = [
   { name: 'Dermatologist', icon: 'bi-heart-pulse' },
-  { name: 'Gynecologist', icon: 'bi-person-hearts' },
-  { name: 'Urologist', icon: 'bi-droplet' },
   { name: 'Gastroenterologist', icon: 'bi-basket2' },
   { name: 'Dentist', icon: 'bi-braces' },
   { name: 'Obstetrician', icon: 'bi-person-check' },
@@ -39,7 +35,9 @@ export class Dashboard implements OnInit {
   { name: 'Nephrologist', icon: 'bi-droplet' },
   { name: 'Endocrinologist', icon: 'bi-syringe' },
   { name: 'Allergist', icon: 'bi-thermometer-half' },
-  { name: 'Radiologist', icon: 'bi-x' },
+   { name: 'Radiologist', icon: 'bi-x' },
+  { name: 'Gynecologist', icon: 'bi-person-hearts' },
+  { name: 'Urologist', icon: 'bi-droplet' },
   { name: 'Surgeon', icon: 'bi-scissors' },
   { name: 'Rheumatologist', icon: 'bi-hand-thumbs-up' },
   { name: 'Infectious Disease Specialist', icon: 'bi-virus' },
@@ -48,7 +46,6 @@ export class Dashboard implements OnInit {
   { name: 'Geriatrician', icon: 'bi-person' },
   { name: 'Immunologist', icon: 'bi-shield' }
 ];
-
 
 conditions = [
     { name: 'Hairfall', img: 'assets/images/hairfall.jpg', speciality: 'Dermatologist' },
@@ -72,7 +69,6 @@ diseases = [
     { name: 'TB', img: 'assets/images/TB.jpg', speciality: 'Pulmonologist' }
 ];
 
-
   testimonials = [
     { name: 'John Doe', img: 'assets/images/p2.png', message: 'Excellent service! Booking was quick and easy.' },
     { name: 'Emily Clark', img: 'assets/images/p4.jpg', message: 'Booking online saved me so much time!' },
@@ -95,11 +91,11 @@ diseases = [
     this.showPopup = false;
     document.body.style.overflow = 'auto';
   }
-goToSpeciality(speciality: string) {
-  this.router.navigate(['/all-doctors'], { queryParams: { speciality } });
-}
+  
+  goToSpeciality(speciality: string) {
+  this.router.navigate(['/patient/all-doctors'], { queryParams: { speciality } });
+  }
 
-  // Navbar
   updateNavbar() {
     const userRole = localStorage.getItem('userRole');
     const profileMenu = document.getElementById('profileMenu');

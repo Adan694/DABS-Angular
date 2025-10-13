@@ -3,10 +3,6 @@
 <div class="container my-5">
   <h2 class="text-center heading mb-4">Book an Appointment</h2>
 
-  <!-- Message -->
-  <!-- <div *ngIf="message" class="alert alert-info">{{ message }}</div> -->
-
-  <!-- No slots -->
   <div *ngIf="availabilitySlots.length === 0" class="text-center">
     <p>No availability slots.</p>
     <button class="btn btn-primary" (click)="loadAvailability()">Refresh</button>
@@ -57,7 +53,6 @@
     <div *ngIf="message && message.trim() !== ''" class="alert alert-danger">{{ message }}</div>
 
     <form>
-      <!-- Show selected date and time -->
       <div class="form-group">
         <label>Date</label>
         <input type="text" [value]="selectedDate" readonly />

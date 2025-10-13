@@ -79,9 +79,7 @@ export class AllDoctors implements OnInit {
     );
     this.noDoctorsMessage = this.filteredDoctors.length === 0;
   }
-// Add this helper method inside AllDoctors class
 getDoctorImageUrl(doctor: Doctor): string {
-  // Use backend URL for images
   return `http://localhost:3000/uploads/${doctor.photo}`;
 }
 

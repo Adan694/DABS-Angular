@@ -16,11 +16,11 @@ export class Footer {
 
   openPopup() {
     this.isPopupVisible = true;
-    this.renderer.addClass(document.body, 'no-scroll'); // disable scroll
+    this.renderer.addClass(document.body, 'no-scroll'); 
   }
 
   closePopup() {
     this.isPopupVisible = false;
-    this.renderer.removeClass(document.body, 'no-scroll'); // re-enable scroll
+    this.renderer.removeClass(document.body, 'no-scroll'); 
   }
 }

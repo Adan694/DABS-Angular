@@ -30,7 +30,6 @@
         *ngFor="
           let spec of [
             { name: 'Dermatologist', icon: 'bi-heart-pulse' },
-            { name: 'Urologist', icon: 'bi-droplet' },
             { name: 'Dentist', icon: 'bi-braces' },
             { name: 'Obesity Specialist', icon: 'bi-person-hearts' },
             { name: 'ENT Specialist', icon: 'bi-ear' },
@@ -39,6 +38,7 @@
             { name: 'Child Specialist', icon: 'bi-person-bounding-box' },
             { name: 'Pulmonologist', icon: 'bi-lungs' },
             { name: 'Eye Specialist', icon: 'bi-eye' },
+            { name: 'Urologist', icon: 'bi-droplet' },
             { name: 'General Physician', icon: 'bi-person-vcard' },
             { name: 'Cardiologist', icon: 'bi-heart-fill' }
           ]
@@ -62,9 +62,8 @@
     </button>
   </div>
 </section>
-<!-- ============================= -->
+
 <!-- SPECIALITY POPUP -->
-<!-- ============================= -->
 <div id="specialityPopup" class="popup" [class.show]="showPopup">
   <div class="popup-content">
     <span class="close" (click)="closeSpecialityPopup()">&times;</span>
@@ -77,9 +76,8 @@
     </div>
   </div>
 </div>
-<!-- ============================= -->
+
 <!-- PATIENT TESTIMONIALS -->
-<!-- ============================= -->
 <section id="patients" class="py-5 bg-light">
   <div class="container text-center">
     <h1 class="section-title mb-5">What Our Patients Say</h1>
@@ -105,16 +103,14 @@
   </div>
 </section>
 
-<!-- ============================= -->
 <!-- SEARCH BY CONDITION -->
-<!-- ============================= -->
 <section id="Conditions" class="py-5">
   <div class="section">
     <h1 class="section-title mb-5">Search By Condition</h1>
     <div class="icon-container">
       <div class="icon-wrapper" *ngFor="let c of conditions">
         <div class="icon">
-          <a [href]="'Alldoctorsreal.html?speciality=' + c.speciality">
+          <a [routerLink]="['/patient/all-doctors']" [queryParams]="{ speciality: c.speciality }">
             <img [src]="c.img" [alt]="c.name" />
           </a>
         </div>
@@ -122,16 +118,15 @@
       </div>
     </div>
   </div>
-  <!-- ============================= -->
+
   <!-- DISEASES SECTION -->
-  <!-- ============================= -->
   <section id="Diseases" class="py-5">
     <div class="section">
       <h1 class="section-title mb-5">Diseases</h1>
       <div class="icon-container">
         <div class="icon-wrapper" *ngFor="let d of diseases">
           <div class="icon">
-            <a [href]="'Alldoctorsreal.html?speciality=' + d.speciality">
+            <a [routerLink]="['/patient/all-doctors']" [queryParams]="{ speciality: d.speciality }">
               <img [src]="d.img" [alt]="d.name" />
             </a>
           </div>
@@ -141,9 +136,7 @@
     </div>
   </section>
 
-  <!-- ============================= -->
   <!-- CONTACT SECTION -->
-  <!-- ============================= -->
   <section id="contact" class="py-5">
     <div class="container">
       <h1 class="section-title mb-5 text-center">Contact <span class="text-primary">Us</span></h1>

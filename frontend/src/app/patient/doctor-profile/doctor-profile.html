@@ -20,7 +20,10 @@
   <p *ngIf="doctor.memberships"><strong>Memberships:</strong> {{ doctor.memberships }}</p>
   <p *ngIf="doctor.locations"><strong>Locations:</strong> {{ doctor.locations }}</p>
 
-  <a class="book-button" [routerLink]="['/booking']" [queryParams]="{ doctorId: doctor._id }"
+  <a
+    class="book-button"
+    [routerLink]="['/patient/booking']"
+    [queryParams]="{ doctorId: doctor._id }"
     >Book Appointment</a
   >
 </div>
