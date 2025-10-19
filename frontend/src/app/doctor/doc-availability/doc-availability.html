@@ -1,1 +1,62 @@
-<p>doc-availability works!</p>
+<app-doctor-navbar></app-doctor-navbar>
+
+<div class="availability-section">
+  <h2 class="section-title">Doctor Availability</h2>
+
+  <table class="availability-table" id="availabilityTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Slots</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let slot of availabilitySlots; let i = index">
+        <td>{{ slot.date }}</td>
+        <td>{{ slot.slots.join(', ') }}</td>
+        <td><button class="btn btn-danger" (click)="removeSlot(i)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="action-buttons">
+    <button class="btn teal" (click)="addSlot()">+ Add Slot</button>
+    <button class="btn teal" (click)="openQuickAddPopup()">Quick Add</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div id="loadingOverlay" *ngIf="loading">
+  <div>
+    <div class="spinner"></div>
+    <div>Saving, please wait...</div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" *ngIf="toastMessage">{{ toastMessage }}</div>
+
+<!-- Quick Add Modal -->
+<div class="modal" *ngIf="showQuickAdd">
+  <div class="modal-content">
+    <span class="modal-close" (click)="closeQuickAddPopup()">&times;</span>
+    <div class="modal-header">Quick Add Availability</div>
+
+    <div class="day-checkboxes">
+      <label *ngFor="let day of days">
+        <input type="checkbox" [(ngModel)]="day.selected" /> {{ day.name }}
+      </label>
+    </div>
+
+    <div class="time-inputs">
+      <label>From: <input type="time" [(ngModel)]="quickStart" /></label>
+      <label>To: <input type="time" [(ngModel)]="quickEnd" /></label>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn teal" (click)="applyQuickAvailability()">Save</button>
+      <button class="btn cancel" (click)="closeQuickAddPopup()">Cancel</button>
+    </div>
+  </div>
+</div>

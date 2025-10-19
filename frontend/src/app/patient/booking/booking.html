@@ -41,7 +41,7 @@
       [disabled]="!selectedDate || !selectedTime"
       (click)="openModal()"
     >
-      Book Appointment
+      {{ loading ? 'Booking Appointment...' : 'Book Appointment' }}
     </button>
   </div>
 </div>
@@ -93,5 +93,7 @@
     </form>
   </div>
 </div>
-
+<div *ngIf="showPopup" class="popup-message">
+  {{ message }}
+</div>
 <app-footer></app-footer>

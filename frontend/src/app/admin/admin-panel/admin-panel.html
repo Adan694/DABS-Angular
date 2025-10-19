@@ -1,1 +1,49 @@
-<p>admin-panel works!</p>
+<div class="admin-container">
+  <app-admin-sidebar></app-admin-sidebar>
+  <div id="overlay"></div>
+
+  <main>
+    <header>
+      <i id="bar" class="fa-solid fa-bars"></i>
+      <div>Admin Dashboard</div>
+      <button id="logoutBtn">Logout</button>
+    </header>
+
+    <section class="dashboard-cards">
+      <div class="card">
+        <h2 id="admittedPatientsCount">0</h2>
+        <p>Total Patients</p>
+      </div>
+      <div class="card">
+        <h2 id="appointmentsCount">0</h2>
+        <p>Today's Appointments</p>
+      </div>
+      <div class="card">
+        <h2 id="totalDoctorsCount">0</h2>
+        <p>Total Doctors</p>
+      </div>
+    </section>
+
+    <section class="charts-section">
+      <div class="chart-container">
+        <h3>Patients</h3>
+        <canvas id="patientsChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>Appointments</h3>
+        <canvas id="appointmentsChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h3>Doctors</h3>
+        <canvas id="doctorsChart"></canvas>
+      </div>
+    </section>
+
+    <section class="todays-appointments">
+      <h3>Today's Appointments</h3>
+      <div id="todaysAppointmentsList">
+        <!-- Appointment items will be inserted here -->
+      </div>
+    </section>
+  </main>
+</div>

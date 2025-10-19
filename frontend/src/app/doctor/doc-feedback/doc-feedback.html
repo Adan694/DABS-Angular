@@ -1,1 +1,50 @@
-<p>doc-feedback works!</p>
+<app-doctor-navbar></app-doctor-navbar>
+<main>
+  <h2 class="page-title">Feedback</h2>
+
+  <div *ngIf="!doctorId || !token" id="loginWarning">
+    You must be logged in as a doctor to view this page.
+  </div>
+
+  <div id="feedbackControls" *ngIf="doctorId && token">
+    <div id="averageRating">
+      Average Rating: <span id="avgStars">{{ avgStars }}</span>
+    </div>
+    <div>
+      <label for="sortFeedback">Sort by:</label>
+      <select id="sortFeedback" (change)="sortFeedback($event)">
+        <option value="dateDesc">Recent</option>
+        <option value="dateAsc">Oldest</option>
+        <option value="ratingDesc">Highest Rating</option>
+        <option value="ratingAsc">Lowest Rating</option>
+      </select>
+    </div>
+  </div>
+
+  <table id="feedbackTable" *ngIf="feedbacks.length">
+    <thead>
+      <tr>
+        <th>Patient Name</th>
+        <th>Rating</th>
+        <th>Feedback</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let feedback of feedbacks; let i = index"
+        [style.animationDelay]="i * 0.15 + 's'"
+        class="appear"
+      >
+        <td data-label="Patient Name">{{ feedback.userName || 'Unknown' }}</td>
+        <td data-label="Rating" class="rating">
+          {{ '★'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating) }}
+        </td>
+        <td data-label="Feedback">{{ feedback.comment || 'No comment' }}</td>
+        <td data-label="Date">{{ feedback.timestamp | date : 'shortDate' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p id="noFeedback" *ngIf="!feedbacks.length && !loading">No feedback available.</p>
+</main>

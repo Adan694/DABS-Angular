@@ -1,1 +1,144 @@
-<p>doc-profile works!</p>
+<app-doctor-navbar></app-doctor-navbar>
+
+<div class="container">
+  <div class="card">
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        <img src="https://via.placeholder.com/120" id="profilePic" alt="Doctor" />
+        <label for="fileUpload" class="edit-avatar">
+          <i class="fas fa-camera"></i>
+        </label>
+        <input type="file" id="fileUpload" accept="image/*" (change)="previewImage($event)" />
+      </div>
+
+      <div class="profile-info">
+        <input type="text" id="doctorName" placeholder="Doctor Name" />
+        <select id="specialization">
+          <option value="" disabled selected>Select Specialization</option>
+          <optgroup label="Primary Care">
+            <option value="general">General Physician</option>
+            <option value="pediatrician">Pediatrician</option>
+          </optgroup>
+          <optgroup label="Internal Medicine Subspecialties">
+            <option value="cardiologist">Cardiologist</option>
+            <option value="gastroenterologist">Gastroenterologist</option>
+            <option value="nephrologist">Nephrologist</option>
+            <option value="oncologist">Oncologist</option>
+            <option value="pulmonologist">Pulmonologist</option>
+          </optgroup>
+          <optgroup label="Surgical Specialties">
+            <option value="orthopedist">Orthopedist</option>
+            <option value="plastic-surgeon">Plastic Surgeon</option>
+            <option value="surgeon">General Surgeon</option>
+            <option value="vascular-surgeon">Vascular Surgeon</option>
+          </optgroup>
+          <optgroup label="Specialty Care">
+            <option value="allergist">Allergist / Immunologist</option>
+            <option value="dermatologist">Dermatologist</option>
+            <option value="neurologist">Neurologist</option>
+            <option value="ophthalmologist">Ophthalmologist</option>
+            <option value="rheumatologist">Rheumatologist</option>
+            <option value="psychiatrist">Psychiatrist</option>
+            <option value="urologist">Urologist</option>
+          </optgroup>
+          <optgroup label="Diagnostic & Technical">
+            <option value="ent Specialist">ENT Specialist</option>
+            <option value="emergency-medicine">Emergency Medicine</option>
+            <option value="radiologist">Radiologist</option>
+            <option value="infectious">Infectious Disease Specialist</option>
+            <option value="sports-medicine">Sports Medicine Specialist</option>
+          </optgroup>
+          <optgroup label="Women’s Health">
+            <option value="gynecologist">Gynecologist</option>
+            <option value="obstetrician">Obstetrician</option>
+          </optgroup>
+          <optgroup label="Other Specialties">
+            <option value="hematologist">Hematologist</option>
+            <option value="dentist">Dentist</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" (click)="switchTab('professional')">Professional Info</button>
+      <button class="tab-btn" (click)="switchTab('personal')">Personal Info</button>
+      <button class="tab-btn" (click)="switchTab('security')">Security</button>
+    </div>
+
+    <div class="tab-content active" id="professional">
+      <div class="input-group">
+        <input type="text" id="qualifications" placeholder=" " />
+        <label>Qualifications</label>
+      </div>
+      <div class="input-group">
+        <input type="text" id="services" placeholder=" " />
+        <label>Services</label>
+      </div>
+      <div class="input-group">
+        <input type="text" id="conditions" placeholder=" " />
+        <label>Conditions Treated</label>
+      </div>
+      <div class="input-group">
+        <input type="text" id="experience" placeholder=" " (input)="validateExperience()" />
+        <label>Experience</label>
+        <span id="experienceError" class="error-message"></span>
+      </div>
+      <div class="input-group">
+        <input type="text" id="memberships" placeholder=" " />
+        <label>Memberships</label>
+      </div>
+      <div class="input-group">
+        <input type="number" id="fees" placeholder=" " (input)="validateFees()" />
+        <label>Fees (Rs.)</label>
+        <span id="feesError" class="error-message"></span>
+      </div>
+      <div class="input-group">
+        <input type="text" id="locations" placeholder=" " />
+        <label>Practice Locations</label>
+      </div>
+    </div>
+
+    <div class="tab-content" id="personal">
+      <div class="input-group">
+        <input type="text" id="degree" placeholder=" " />
+        <label>Degree</label>
+      </div>
+      <div class="input-group">
+        <textarea id="about" placeholder=" "></textarea>
+        <label>About</label>
+      </div>
+    </div>
+
+    <div class="tab-content" id="security">
+      <button
+        type="button"
+        id="change-password-btn"
+        (click)="togglePasswordFields()"
+        [disabled]="!isEditing"
+      >
+        Change Password
+      </button>
+      <div id="password-fields" [style.display]="showPasswordFields ? 'block' : 'none'">
+        <input type="password" id="current-password" placeholder="Current Password" />
+        <input type="password" id="new-password" placeholder="New Password" />
+        <input type="password" id="confirm-password" placeholder="Confirm Password" />
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn" (click)="isEditing ? saveProfile() : enableEditing()">
+        {{ isEditing ? 'Save Profile' : 'Edit Profile' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="loadingOverlay" [style.display]="isLoading ? 'flex' : 'none'">
+  <div>
+    <div class="spinner"></div>
+    <div>Saving, please wait...</div>
+  </div>
+</div>
+
+<div id="toast" [style.display]="toastMessage ? 'block' : 'none'">{{ toastMessage }}</div>

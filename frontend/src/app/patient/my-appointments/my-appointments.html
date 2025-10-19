@@ -1,1 +1,152 @@
-<p>my-appointments works!</p>
+<app-navbar></app-navbar>
+<div class="wrapper">
+  <!-- Main Section -->
+  <div class="main-container">
+    <div class="appointments">
+      <div id="appointment-tabs" style="margin-bottom: 1em">
+        <button
+          class="tab-button"
+          [class.active]="activeTab === 'upcoming'"
+          (click)="showAppointments('upcoming')"
+        >
+          <i class="fas fa-clock"></i> Upcoming
+        </button>
+        <button
+          class="tab-button"
+          [class.active]="activeTab === 'past'"
+          (click)="showAppointments('past')"
+        >
+          <i class="fas fa-history"></i> Past
+        </button>
+        <button
+          class="tab-button"
+          [class.active]="activeTab === 'all'"
+          (click)="showAppointments('all')"
+        >
+          <i class="fas fa-list"></i> All
+        </button>
+      </div>
+
+      <h2>My Appointments</h2>
+
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Doctor Name</th>
+            <th>Apt. Date</th>
+            <th>Apt. Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let a of paginatedAppointments">
+            <td>Dr. {{ a.doctorId?.name || 'Unknown Doctor' }}</td>
+            <td>{{ a.date | date }}</td>
+            <td>{{ a.time }}</td>
+            <td>
+              <span
+                [ngClass]="{
+                  'status-pending': a.status?.toLowerCase().trim() === 'pending',
+                  'status-confirmed': a.status?.toLowerCase().trim() === 'confirmed',
+                  'status-cancelled':
+                    a.status?.toLowerCase().trim() === 'cancelled' ||
+                    a.status?.toLowerCase().trim() === 'canceled',
+                  'status-completed': a.status?.toLowerCase().trim() === 'completed'
+                }"
+              >
+                {{ a.status | titlecase }}
+              </span>
+            </td>
+            <td>
+              <span class="btn-view" (click)="viewAppointment(a._id)">View</span>
+              <span
+                *ngIf="activeTab === 'upcoming'"
+                class="btn-cancel"
+                (click)="cancelAppointment(a._id)"
+                >Cancel</span
+              >
+
+              <!-- Show "Give Feedback" only if appointment is completed and feedback not given -->
+              <button
+                *ngIf="a.status?.toLowerCase() === 'completed' && !a.hasFeedback"
+                (click)="giveFeedback(a)"
+                class="btn-feedback"
+              >
+                Give Feedback
+              </button>
+
+              <!-- Show "View Feedback" only if appointment is completed and feedback is given -->
+              <button
+                *ngIf="a.status?.toLowerCase() === 'completed' && a.hasFeedback"
+                (click)="viewFeedback(a)"
+                class="btn-view-feedback"
+              >
+                View Feedback
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="paginatedAppointments.length === 0">
+            <td colspan="5">No {{ activeTab }} appointments found.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div id="pagination-controls">
+        <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+        <span id="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" *ngIf="loading">Loading...</div>
+  </div>
+
+  <!-- Appointment Modal -->
+  <div class="popup-overlay" [class.show]="showPopup">
+    <div class="content">
+      <button id="close" (click)="closePopup()">✕</button>
+      <div class="contentDetail">
+        <h3>Appointment Details</h3>
+        <p><strong>Doctor:</strong> {{ popupAppointment?.doctorId?.name }}</p>
+        <p><strong>Date:</strong> {{ popupAppointment?.date | date }}</p>
+        <p><strong>Time:</strong> {{ popupAppointment?.time }}</p>
+        <p><strong>Status:</strong> {{ popupAppointment?.status }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cancel Confirmation Modal -->
+  <div class="modal-overlay" [style.display]="cancelModal ? 'flex' : 'none'">
+    <div class="modal-content">
+      <span class="modal-close" (click)="cancelModal = false">&times;</span>
+      <p>Are you sure you want to cancel this appointment?</p>
+      <button (click)="confirmCancel()">Yes</button>
+      <button (click)="cancelModal = false">No</button>
+    </div>
+  </div>
+  <!-- Feedback View Modal -->
+  <div class="modal-overlay" [style.display]="feedbackPopup ? 'flex' : 'none'">
+    <div class="modal-content">
+      <span class="modal-close" (click)="closeFeedbackPopup()">&times;</span>
+      <h3>Feedback Details</h3>
+      <p><strong>Doctor:</strong> {{ selectedFeedback?.doctor }}</p>
+      <p><strong>Date Submitted:</strong> {{ selectedFeedback?.date }}</p>
+      <p><strong>Feedback:</strong></p>
+      <p class="feedback-text">{{ selectedFeedback?.feedback }}</p>
+      <button (click)="closeFeedbackPopup()">Close</button>
+    </div>
+  </div>
+
+  <!-- Cancel Success Modal -->
+  <div class="modal-overlay" [style.display]="successModal ? 'flex' : 'none'">
+    <div class="modal-content">
+      <p>Appointment cancelled successfully.</p>
+      <button (click)="closeSuccess()">OK</button>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>

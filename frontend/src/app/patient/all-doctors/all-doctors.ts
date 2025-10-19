@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
+import { DoctorService } from '../../services/doctor';
 
 export interface Doctor {
   _id: string;
@@ -19,7 +19,7 @@ export interface Doctor {
 @Component({
   selector: 'app-all-doctors',
   standalone: true,
-  imports: [Navbar, Footer, FormsModule, CommonModule, RouterLink, HttpClientModule],
+  imports: [Navbar, Footer, FormsModule, CommonModule, RouterLink],
   templateUrl: './all-doctors.html',
   styleUrls: ['./all-doctors.css']
 })
@@ -34,30 +34,30 @@ export class AllDoctors implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private doctorService: DoctorService
   ) {}
 
   ngOnInit(): void {
     this.loading = true;
     this.specialityParam = this.route.snapshot.queryParamMap.get('speciality');
-
-    // Fetch doctors from backend
-    this.http.get<Doctor[]>('http://localhost:3000/doctor')
-      .subscribe({
-        next: (data) => {
-          this.doctors = data;
-          this.applySpecialityFilter();
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error fetching doctors:', err);
-          this.loading = false;
-          this.noDoctorsMessage = true;
-        }
-      });
+    this.fetchDoctors();
   }
 
-  // Filter by speciality from query param
+  fetchDoctors(): void {
+    this.doctorService.getAllDoctors().subscribe({
+      next: (data) => {
+        this.doctors = data;
+        this.applySpecialityFilter();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('❌ Error fetching doctors:', err);
+        this.loading = false;
+        this.noDoctorsMessage = true;
+      }
+    });
+  }
+
   applySpecialityFilter(): void {
     if (this.specialityParam) {
       this.filteredDoctors = this.doctors.filter(
@@ -69,7 +69,6 @@ export class AllDoctors implements OnInit {
     this.noDoctorsMessage = this.filteredDoctors.length === 0;
   }
 
-  // Search doctors by name or speciality
   filterDoctors(): void {
     const query = this.searchQuery.toLowerCase();
     this.filteredDoctors = this.doctors.filter(
@@ -79,11 +78,14 @@ export class AllDoctors implements OnInit {
     );
     this.noDoctorsMessage = this.filteredDoctors.length === 0;
   }
-getDoctorImageUrl(doctor: Doctor): string {
-  return `http://localhost:3000/uploads/${doctor.photo}`;
+
+ getDoctorImageUrl(doctor: Doctor): string {
+  const imageUrl = `http://localhost:3000/uploads/${doctor.photo}`;
+  console.log('🖼️ Loading image from:', imageUrl); // 👈 Add this line
+  return imageUrl;
 }
 
-  // Generate star rating
+
   generateStars(rating: number): string {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.5;
@@ -93,7 +95,6 @@ getDoctorImageUrl(doctor: Doctor): string {
     return stars;
   }
 
-  // Check if doctor has available slots today
   isAvailable(doctor: Doctor): boolean {
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
@@ -112,7 +113,6 @@ getDoctorImageUrl(doctor: Doctor): string {
     });
   }
 
-  // Filter by speciality when clicked
   goToSpeciality(speciality: string): void {
     this.router.navigate([], { queryParams: { speciality } });
   }

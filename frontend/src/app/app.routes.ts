@@ -10,6 +10,17 @@ export const routes: Routes = [
       import('./patient/patient-routes').then(m => m.routes)
   },
   { path: 'login', component: Login },
-    { path: '', component: Dashboard}
+  { path: '', component: Dashboard },
+     {
+    path: 'doctor',
+    loadChildren: () =>
+      import('./doctor/doctor-routes').then(m => m.routes)
+  },
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('./admin/admin-routes').then(m => m.routes)
+  },
+
 
 ];

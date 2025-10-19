@@ -1,1 +1,47 @@
-<p>doc-panel works!</p>
+<app-doctor-navbar></app-doctor-navbar>
+<body>
+  <main class="main-content">
+    <section class="stats">
+      <div class="stat-card" id="appointments-card">
+        <i class="fas fa-clock"></i>
+        <h3>{{ appointmentsCount }}</h3>
+        <p>Pending Appointments</p>
+      </div>
+      <div class="stat-card" id="patients-card">
+        <i class="fas fa-users"></i>
+        <h3>{{ patientsCount }}</h3>
+        <p>Total Patients</p>
+      </div>
+      <div class="stat-card" id="today-card">
+        <i class="fas fa-calendar-day"></i>
+        <h3>{{ todayAppointments }}</h3>
+        <p>Today’s Appointments</p>
+      </div>
+      <div class="stat-card" id="completed-card">
+        <i class="fas fa-check-circle"></i>
+        <h3>{{ completedCount }}</h3>
+        <p>Completed This Month</p>
+      </div>
+    </section>
+
+    <section class="chart-section">
+      <h2>Weekly Appointment Trend</h2>
+      <canvas id="appointmentChart"></canvas>
+    </section>
+
+    <section class="latest-bookings">
+      <h2>Latest Bookings</h2>
+      <ul id="booking-list">
+        <li *ngFor="let booking of latestBookings">
+          <div class="booking-info">
+            <strong>{{ booking.patientId?.name || booking.name || 'Unknown' }}</strong> - Booking on
+            {{ booking.date | date : 'shortDate' }}
+          </div>
+          <div class="booking-actions">
+            <span class="status {{ booking.status }}">{{ booking.status | titlecase }}</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
+</body>

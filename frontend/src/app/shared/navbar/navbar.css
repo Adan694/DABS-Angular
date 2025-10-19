@@ -109,7 +109,6 @@ nav ul li a:hover {
 .hamburger span.active:nth-child(3) {
     transform: rotate(-45deg) translateY(-8px);
 }
-/* Responsive Hamburger Behavior */
 @media (max-width: 768px) {
     nav ul {
             position: fixed;
@@ -140,7 +139,6 @@ nav ul li a:hover {
             margin: 10px 0;
         }
 }
-/* Dropdown Menu for Account */
 nav ul li.dropdown {
     position: relative;
 }
@@ -172,7 +170,7 @@ nav ul li.dropdown .dropdown-menu li a {
     display: block;
     padding: 10px 20px;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     text-decoration: none;
     transition: background 0.3s, color 0.3s;
 }
@@ -182,7 +180,6 @@ nav ul li.dropdown .dropdown-menu li a:hover {
     color: #fff;
 }
 
-/* Horizontal dropdown on mobile */
 @media (max-width: 768px) {
     nav ul li.dropdown {
         position: relative;
@@ -190,24 +187,17 @@ nav ul li.dropdown .dropdown-menu li a:hover {
 
     nav ul li.dropdown .dropdown-menu {
         display: none;
-        /* hidden by default */
         position: absolute;
-        /* absolute so it floats over the vertical menu */
         top: 100%;
-        /* below the Account link */
         left: 50%;
-        /* center horizontally */
         transform: translateX(-50%);
-        /* center the menu */
         background: rgba(9, 102, 102, 0.95);
         flex-direction: row;
-        /* horizontal layout */
         justify-content: center;
         padding: 5px 0;
         border-radius: 5px;
         z-index: 2000;
         flex-wrap: wrap;
-        /* wrap if too many items */
         gap: 0px;
     }
 
@@ -221,7 +211,6 @@ nav ul li.dropdown .dropdown-menu li a:hover {
         color: white;
         text-align: center;
         white-space: nowrap;
-        /* prevent line breaks */
         border: none;
     }
 

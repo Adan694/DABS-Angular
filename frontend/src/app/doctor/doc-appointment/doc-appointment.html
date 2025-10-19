@@ -1,1 +1,151 @@
-<p>doc-appointment works!</p>
+<app-doctor-navbar></app-doctor-navbar>
+<body>
+  <div class="container">
+    <h1 class="page-title">Appointment Management</h1>
+
+    <div class="filter-bar">
+      <input
+        type="text"
+        placeholder="Search by patient name..."
+        [(ngModel)]="searchText"
+        (input)="applyFilter()"
+      />
+    </div>
+
+    <!-- Upcoming Appointments -->
+    <div class="section-block">
+      <h2>Upcoming Appointments</h2>
+      <table class="appointment-table" *ngIf="upcomingAppointments.length > 0">
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Date & Time</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appt of pagedAppointments(upcomingAppointments, currentPageUpcoming)">
+            <td>{{ appt.patientName || appt.patientId?.name }}</td>
+            <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
+            <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
+            <td>{{ appt.status }}</td>
+            <td>
+              <button (click)="markCompleted(appt._id)">Complete</button>
+              <button (click)="markMissed(appt._id)">Missed</button>
+              <button (click)="cancelAppointment(appt._id)">Cancel</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination-controls" *ngIf="upcomingAppointments.length > pageSize">
+        <button (click)="prevPage('upcoming')">Prev</button>
+        <span>Page {{ currentPageUpcoming }} of {{ totalPages(upcomingAppointments) }}</span>
+        <button (click)="nextPage('upcoming')">Next</button>
+      </div>
+    </div>
+
+    <!-- Cancelled Appointments -->
+    <div class="section-block">
+      <h2>Cancelled Appointments</h2>
+      <table class="appointment-table" *ngIf="cancelledAppointments.length > 0">
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Date & Time</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appt of pagedAppointments(cancelledAppointments, currentPageCancelled)">
+            <td>{{ appt.patientName || appt.patientId?.name }}</td>
+            <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
+            <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
+            <td>{{ appt.status }}</td>
+            <td><button (click)="openRescheduleModal(appt._id)">Reschedule</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination-controls" *ngIf="cancelledAppointments.length > pageSize">
+        <button (click)="prevPage('cancelled')">Prev</button>
+        <span>Page {{ currentPageCancelled }} of {{ totalPages(cancelledAppointments) }}</span>
+        <button (click)="nextPage('cancelled')">Next</button>
+      </div>
+    </div>
+
+    <!-- Missed Appointments -->
+    <div class="section-block">
+      <h2>Missed Appointments</h2>
+      <table class="appointment-table" *ngIf="missedAppointments.length > 0">
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Date & Time</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appt of pagedAppointments(missedAppointments, currentPageMissed)">
+            <td>{{ appt.patientName || appt.patientId?.name }}</td>
+            <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
+            <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
+            <td>{{ appt.status }}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination-controls" *ngIf="missedAppointments.length > pageSize">
+        <button (click)="prevPage('missed')">Prev</button>
+        <span>Page {{ currentPageMissed }} of {{ totalPages(missedAppointments) }}</span>
+        <button (click)="nextPage('missed')">Next</button>
+      </div>
+    </div>
+
+    <!-- Completed Appointments -->
+    <div class="section-block">
+      <h2>Completed Appointments</h2>
+      <table class="appointment-table" *ngIf="completedAppointments.length > 0">
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Date & Time</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appt of pagedAppointments(completedAppointments, currentPageCompleted)">
+            <td>{{ appt.patientName || appt.patientId?.name }}</td>
+            <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
+            <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
+            <td>{{ appt.status }}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination-controls" *ngIf="completedAppointments.length > pageSize">
+        <button (click)="prevPage('completed')">Prev</button>
+        <span>Page {{ currentPageCompleted }} of {{ totalPages(completedAppointments) }}</span>
+        <button (click)="nextPage('completed')">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reschedule Modal -->
+  <div class="modal" *ngIf="showRescheduleModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeModal()">&times;</span>
+      <h3>Choose a New Slot</h3>
+      <select #slotSelect>
+        <option *ngFor="let slot of availableSlots" [value]="slot">{{ slot }}</option>
+      </select>
+      <button (click)="confirmReschedule(slotSelect.value)">Confirm Reschedule</button>
+    </div>
+  </div>
+</body>

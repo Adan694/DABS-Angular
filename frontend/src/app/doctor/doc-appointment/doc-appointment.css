@@ -1,0 +1,275 @@
+body{
+            background-color: #e6f2ff;
+}
+/* Container */
+.container {
+    padding: 25px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 80px auto 40px auto;
+    font-family: 'Roboto', sans-serif;
+    
+}
+
+/* Section Block */
+.section-block {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section-block:hover {
+    box-shadow: 0 12px 28px rgba(0, 128, 128, 0.2);
+    transform: translateY(-4px);
+}
+
+.section-block h2 {
+    color: #096666;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.filter-bar input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #ccc;
+    font-size: 14px;
+    transition: all 0.25s ease;
+}
+
+.filter-bar input:focus {
+    outline: none;
+    border-color: #009999;
+    box-shadow: 0 0 8px rgba(0, 153, 153, 0.3);
+}
+
+/* Appointment Table */
+.appointment-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.appointment-table thead th {
+    background-color: #096666;
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+}
+
+.appointment-table tbody tr {
+    background: #fdfdfd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 128, 128, 0.07);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.appointment-table tbody tr:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 128, 128, 0.15);
+}
+
+.appointment-table td {
+    padding: 14px 18px;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* Buttons in Table */
+.appointment-table td button {
+    margin: 0 4px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #009999;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.appointment-table td button:hover {
+    background-color: #007777;
+    box-shadow: 0 3px 10px rgba(0, 119, 119, 0.3);
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.pagination-controls button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #009999;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 8px rgba(0, 153, 153, 0.3);
+}
+
+.pagination-controls button:hover:not(:disabled) {
+    background-color: #007777;
+    box-shadow: 0 5px 12px rgba(0, 119, 119, 0.4);
+}
+
+.pagination-controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* Modal */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 14px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(0, 153, 153, 0.3);
+    animation: fadeIn 0.35s ease-in-out;
+    position: relative;
+}
+
+.modal-content h3 {
+    color: #006666;
+    margin-bottom: 20px;
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border: 1.5px solid #009999;
+    font-size: 14px;
+}
+
+.modal-content select:focus {
+    outline: none;
+    border-color: #007777;
+    box-shadow: 0 0 8px rgba(0, 119, 119, 0.3);
+}
+
+.modal-content button {
+    padding: 12px 20px;
+    border-radius: 8px;
+    background-color: #009999;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.25s ease;
+}
+
+.modal-content button:hover {
+    background-color: #007777;
+    box-shadow: 0 5px 15px rgba(0, 119, 119, 0.4);
+}
+
+/* Close button */
+.modal-content .close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.25s ease;
+}
+
+.modal-content .close:hover {
+    color: #007777;
+}
+
+/* Fade In animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .section-block {
+        padding: 20px;
+    }
+
+    .appointment-table td,
+    .appointment-table th {
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .filter-bar input {
+        font-size: 13px;
+    }
+
+    .pagination-controls {
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .section-block {
+        padding: 15px;
+    }
+
+    .appointment-table td,
+    .appointment-table th {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .filter-bar input {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 90%;
+    }
+}

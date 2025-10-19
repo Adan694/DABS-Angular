@@ -53,13 +53,40 @@ export class Login {
         return;
       }
 
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userRole', data.role);
+//       localStorage.setItem('authToken', data.token);
+//       localStorage.setItem('userRole', data.role);
+//   // ✅ Save patientId safely (depending on backend response structure)
+// const patientId = data.patientId || data.user?._id || data.userId || data.id;
+// if (patientId) {
+//   localStorage.setItem('patientId', patientId);
+//   console.log('✅ Saved patientId:', patientId);
+// } else {
+//   console.warn('⚠️ No patientId found in backend response:', data);
+// }
 
-      // Role-based navigation
-      if (data.role === 'admin') this.router.navigate(['/admin']);
-      else if (data.role === 'doctor') this.router.navigate(['/doctor']);
-      else this.router.navigate(['/patient']);
+//       // Role-based navigation
+//       if (data.role === 'admin') this.router.navigate(['/admin']);
+//       else if (data.role === 'doctor') this.router.navigate(['/doctor']);
+//       else this.router.navigate(['/patient']);
+
+ localStorage.setItem('authToken', data.token);
+localStorage.setItem('userRole', data.role);
+
+// Save doctorId if the user is a doctor
+if (data.role === 'doctor' && data.doctor?._id) {
+  localStorage.setItem('doctorId', data.doctor._id);
+  console.log('✅ Saved doctorId:', data.doctor._id);
+}
+
+// Optional: patientId for patients
+if (data.role === 'patient' && data.patientId) {
+  localStorage.setItem('patientId', data.patientId);
+}
+
+// Role-based navigation
+if (data.role === 'admin') this.router.navigate(['/admin']);
+else if (data.role === 'doctor') this.router.navigate(['/doctor']);
+else this.router.navigate(['/patient']);
 
     } catch (err) {
       console.error(err);

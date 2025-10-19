@@ -10,11 +10,12 @@ const {
 const { authenticateToken } = require('../middlewares/auth'); 
 const router = express.Router();
 
-router.get('/doctors/:doctorId/feedback', getFeedbackByDoctor);
-router.put('/feedback/:id', authenticateToken, updateFeedback);      
-router.delete('/feedback/:id', authenticateToken, deleteFeedback);
-router.post('/feedback', authenticateToken, submitFeedback);
+router.post('/', authenticateToken, submitFeedback);
+router.get('/doctor/:doctorId', getFeedbackByDoctor);
+router.put('/:id', authenticateToken, updateFeedback);
+router.delete('/:id', authenticateToken, deleteFeedback);
 router.get('/admin/all', authenticateToken, getAllFeedback);
-router.get("/patient/:patientId", authenticateToken, getFeedbackByPatient);
+router.get('/patient/:patientId', authenticateToken, getFeedbackByPatient);
+
 
 module.exports = router;

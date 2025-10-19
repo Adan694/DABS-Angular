@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg fixed-top" style="background-color: rgb(9, 102, 102)">
+  <div class="container-fluid d-flex justify-content-between align-items-center text-white">
+    <div class="logo d-flex align-items-center">
+      <img
+        src="assets/images/Da.png"
+        alt="DocAssist Logo"
+        class="rounded-circle me-2"
+        width="60"
+        height="60"
+      />
+      <h1 class="m-0" style="font-size: 28px">DocAssist</h1>
+    </div>
+
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" [ngClass]="{ show: menuOpen }">
+      <ul class="navbar-nav ms-auto flex-column flex-lg-row">
+        <li class="nav-item">
+          <a routerLink="/doctor/dashboard" class="nav-link">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/doctor/appointments" class="nav-link">Appointments</a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/doctor/availability" class="nav-link">Manage Availability</a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/doctor/feedback" class="nav-link">Feedback</a>
+        </li>
+
+        <!-- Account Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" (click)="toggleAccountDropdown()">
+            Account
+          </a>
+          <ul class="dropdown-menu" [ngClass]="{ show: accountDropdownOpen }">
+            <li>
+              <a routerLink="/doctor/profile" class="dropdown-item">Profile</a>
+            </li>
+            <li>
+              <a (click)="logout()" class="dropdown-item">Logout</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

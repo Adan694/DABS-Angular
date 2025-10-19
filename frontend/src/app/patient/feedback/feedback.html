@@ -1,1 +1,50 @@
-<p>feedback works!</p>
+<app-navbar></app-navbar>
+<header class="feedback-header">
+  <!-- <a routerLink="/patient/appointments" class="back-btn"> &larr; Go to Appointments </a> -->
+  <div class="header-content">
+    <!-- <h1>Feedback</h1> -->
+    <h1>We'd love to hear from you!</h1>
+  </div>
+</header>
+
+<div class="container my-5 p-4 rounded shadow-sm bg-light">
+  <h2>Share your Experience</h2>
+  <p *ngIf="doctorName" class="fw-medium">Doctor: {{ doctorName }}</p>
+
+  <form *ngIf="!errorMessage" (ngSubmit)="submitFeedback()" #feedbackForm="ngForm">
+    <div class="mb-3">
+      <label for="rating" class="form-label fw-semibold">Rate Your Experience</label>
+      <select id="rating" class="form-select" required [(ngModel)]="rating" name="rating">
+        <option value="">Select a rating</option>
+        <option value="5">Excellent (5)</option>
+        <option value="4">Good (4)</option>
+        <option value="3">Average (3)</option>
+        <option value="2">Poor (2)</option>
+        <option value="1">Very Poor (1)</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="comment" class="form-label fw-semibold">Your Comments</label>
+      <textarea
+        id="comment"
+        class="form-control"
+        [(ngModel)]="comment"
+        name="comment"
+        placeholder="Write your feedback here..."
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-secondary w-100" [disabled]="loading">
+      <span *ngIf="!loading">Submit Feedback</span>
+      <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+    </button>
+  </form>
+</div>
+
+<div class="popup" [class.show]="showPopup">
+  <h3>Thank you for your feedback!</h3>
+  <button class="btn btn-secondary mt-2" (click)="closePopup()">Close</button>
+</div>
+<app-footer></app-footer>
