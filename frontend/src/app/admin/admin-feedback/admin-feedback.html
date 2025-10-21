@@ -1,1 +1,70 @@
-<p>admin-feedback works!</p>
+<div class="admin-layout">
+  <app-admin-sidebar class="sidebar"></app-admin-sidebar>
+
+  <div id="overlay" (click)="toggleSidebar()"></div>
+
+  <main>
+    <header>
+      <i id="bar" class="fa-solid fa-bars" (click)="toggleSidebar()"></i>
+      <div>All Feedbacks</div>
+      <button id="logoutBtn" (click)="logout()">Logout</button>
+    </header>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Comment</th>
+            <th>Rating</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="feedbackList">
+          <tr *ngIf="feedbackList.length === 0">
+            <td colspan="6">Loading...</td>
+          </tr>
+
+          <tr *ngFor="let fb of paginatedFeedback">
+            <td>
+              {{ fb.patientId?.name || 'N/A' }}<br /><br />
+              <span
+                (click)="goToPatient(fb.patientId?._id)"
+                style="color: inherit; text-decoration: none; cursor: pointer"
+              >
+                {{ fb.patientId?.email || '' }}
+              </span>
+            </td>
+
+            <td>{{ fb.doctorId?.name || 'N/A' }}</td>
+            <td>{{ fb.comment }}</td>
+            <td [innerHTML]="fb.stars"></td>
+            <td>{{ formatDateTime(fb.timestamp) }}</td>
+            <td>
+              <button class="btn" (click)="openDeleteModal(fb._id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }} of {{ Math.ceil(feedbackList.length / itemsPerPage) }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= feedbackList.length">
+          Next
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+<app-confirm-modal
+  *ngIf="showDeleteModal"
+  [title]="'Confirm Delete'"
+  [message]="'Are you sure you want to delete this feedback?'"
+  (confirm)="confirmDelete()"
+  (cancel)="closeDeleteModal()"
+>
+</app-confirm-modal>

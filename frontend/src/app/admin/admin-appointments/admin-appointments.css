@@ -10,11 +10,8 @@
       overflow-x: hidden;
   }
 
-
-
   main {
-      margin-left: 250px;
-      width: calc(100% - 250px);
+      
       position: relative;
       z-index: 1;
       padding: 20px;
@@ -37,6 +34,7 @@
       box-sizing: border-box;
       border-bottom: 3px solid white;
       transition: background-color 0.3s ease, border-color 0.3s ease;
+      margin-bottom: 20px;
   }
 
   header:hover {
@@ -118,7 +116,7 @@
       background-color: #166e6b;
       color: white;
       padding: 16px;
-      text-align: left;
+      text-align: center;
       font-weight: 700;
       border-bottom: 2px solid #0f5957;
       transition: background-color 0.3s ease;
@@ -247,46 +245,7 @@
       font-size: 16px;
   }
 
-  @media (max-width: 768px) {
-      .main-content {
-          padding: 20px;
-      }
 
-      table {
-          font-size: 14px;
-      }
-
-      th,
-      td {
-          padding: 12px;
-      }
-
-      .sidebar {
-          transform: translateX(-100%);
-      }
-
-      .sidebar.active {
-          transform: translateX(0);
-      }
-
-      main {
-          margin-left: 0;
-          width: 100%;
-      }
-
-      #bar {
-          display: block;
-          background: none;
-          border: none;
-          color: white;
-          font-size: 26px;
-          cursor: pointer;
-      }
-
-      #bar:focus {
-          outline: none;
-      }
-  }
 
   @media (max-width: 480px) {
       header {
@@ -537,12 +496,28 @@
       min-height: 100vh;
   }
 
+  @media (min-width: 992px) {
+      app-admin-sidebar {
+          position: fixed;
+          height: 100vh;
+      }
+  }
+
   /* Make sure sidebar stays full height */
   app-admin-sidebar {
-      height: 100vh;
-      position: fixed;
       left: 0;
       top: 0;
+  }
+  app-admin-sidebar.sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100vh;
+      background: white;
+      z-index: 1000;
+      /* ensure it's above overlay */
+      transition: transform 0.3s ease;
   }
 
   /* Push the main content to the right of sidebar */
@@ -550,4 +525,100 @@
       margin-left: 250px;
       /* same width as sidebar */
       flex: 1;
+  }
+
+  @media (max-width: 768px) {
+      main {
+          margin-left: 0 !important;
+          /* remove left margin on small screens */
+          width: 100%;
+      }
+
+      .sidebar {
+          transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+          transform: translateX(0);
+      }
+
+      #bar {
+          display: block;
+          background: none;
+          border: none;
+          color: white;
+          font-size: 26px;
+          cursor: pointer;
+      }
+          header {
+              flex-direction: row;
+              gap: 10px;
+              font-size: 20px;
+              align-items: center;
+          }
+  }
+
+  /* ✅ Responsive Table Styles */
+  @media (max-width: 768px) {
+      table {
+          display: block;
+          width: 100%;
+          overflow-x: auto;
+          border: 0;
+          box-shadow: none;
+      }
+
+      thead {
+          display: none;
+          /* hide table headers for mobile view */
+      }
+
+      tbody,
+      tr,
+      td {
+          display: block;
+          width: 100%;
+      }
+
+      tr {
+          background: #fff;
+          margin-bottom: 15px;
+          border-radius: 10px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+          padding: 10px 15px;
+      }
+
+      td {
+          text-align: left;
+          padding: 10px 0;
+          position: relative;
+          border: none;
+          border-bottom: 1px solid #eee;
+          font-size: 15px;
+      }
+
+      td:last-child {
+          border-bottom: none;
+      }
+
+      /* Add labels before each cell (using data-label attribute) */
+      td::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: #166e6b;
+          display: block;
+          margin-bottom: 4px;
+          text-transform: capitalize;
+      }
+
+      .action {
+          justify-content: flex-start;
+      }
+  }
+  .status::first-letter,
+  .cancelled::first-letter,
+  .completed::first-letter,
+  .pending::first-letter,
+  .missed::first-letter {
+      text-transform: uppercase;
   }

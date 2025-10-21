@@ -1,1 +1,94 @@
-<p>patient-list works!</p>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<div class="admin-layout d-flex">
+  <div class="sidebar" [class.active]="sidebarActive">
+    <app-admin-sidebar></app-admin-sidebar>
+  </div>
+  <div id="overlay" [class.active]="sidebarActive" (click)="closeSidebar()"></div>
+
+  <div class="main-content flex-grow-1">
+    <header>
+      <i id="bar" class="fa-solid fa-bars" (click)="toggleSidebar()"></i>
+      <div>Patients List</div>
+      <button id="logoutBtn" (click)="logout()">Logout</button>
+    </header>
+
+    <div class="search-container">
+      <input
+        type="text"
+        id="searchInput"
+        [(ngModel)]="searchQuery"
+        (input)="searchPatients()"
+        placeholder="Search by name..."
+      />
+    </div>
+
+    <table id="patientsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let patient of paginatedPatients">
+          <td>{{ patient.name }}</td>
+          <td>{{ patient.email }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="patient.isActive ? 'active' : 'inactive'">
+              {{ patient.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div class="table-buttons">
+              <button
+                class="details-btn"
+                (click)="router.navigate(['/patient-details', patient._id])"
+              >
+                <i class="fas fa-info-circle"></i> Show Details
+              </button>
+
+              <button
+                *ngIf="patient.isActive"
+                class="deactivate-btn"
+                (click)="deactivatePatient(patient._id)"
+              >
+                <i class="fas fa-user-slash"></i> Deactivate
+              </button>
+
+              <button
+                *ngIf="!patient.isActive"
+                class="activate-btn"
+                (click)="activatePatient(patient._id)"
+              >
+                <i class="fas fa-user-check"></i> Activate
+              </button>
+
+              <button class="delete-btn" (click)="deletePatient(patient._id)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" id="pagination">
+      <button
+        *ngFor="let page of [].constructor(pageCount); let i = index"
+        (click)="changePage(i + 1)"
+        [class.active]="currentPage === i + 1"
+      >
+        {{ i + 1 }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div id="loaderOverlay" *ngIf="loaderVisible">
+    <div class="loader"></div>
+  </div>
+</div>

@@ -1,19 +1,19 @@
-
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Chart } from 'chart.js/auto';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
+import { AdminService } from '../../services/admin';
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
   imports: [CommonModule, AdminSidebar],
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './admin-panel.html',
   styleUrls: ['./admin-panel.css']
 })
 export class AdminPanel implements OnInit, AfterViewInit {
-  constructor(private http: HttpClient) {}
+  constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
     const role = localStorage.getItem("userRole");
@@ -50,169 +50,99 @@ export class AdminPanel implements OnInit, AfterViewInit {
     });
   }
 
-  async fetchDashboardStats() {
-    const token = localStorage.getItem("authToken");
-    try {
-      const countsRes = await fetch(
-        "http://localhost:3000/api/admin/dashboard/user-counts",
-        {
-          headers: { Authorization: "Bearer " + token },
-        }
-      );
-      const countsData = await countsRes.json();
-      (document.getElementById("admittedPatientsCount") as HTMLElement).textContent =
-        countsData.patientCount || 0;
-      (document.getElementById("totalDoctorsCount") as HTMLElement).textContent =
-        countsData.doctorCount || 0;
-
-      const appointmentsRes = await fetch(
-        "http://localhost:3000/api/admin/dashboard/todays-appointments",
-        {
-          headers: { Authorization: "Bearer " + token },
-        }
-      );
-      const appointmentsData = await appointmentsRes.json();
-      console.log("Appointments Data:", appointmentsData);
-
-      (document.getElementById("appointmentsCount") as HTMLElement).textContent =
-        appointmentsData.todaysAppointments?.length || 0;
-    } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
-    }
+  fetchDashboardStats() {
+    this.adminService.getDashboardStats().subscribe({
+      next: (data) => {
+        (document.getElementById("admittedPatientsCount") as HTMLElement).textContent =
+          data.patientCount || 0;
+        (document.getElementById("totalDoctorsCount") as HTMLElement).textContent =
+          data.doctorCount || 0;
+      },
+      error: (err) => console.error(err)
+    });
   }
 
-  async fetchTodaysAppointments() {
-    const token = localStorage.getItem("authToken");
-    try {
-      const res = await fetch(
-        "http://localhost:3000/api/admin/dashboard/todays-appointments",
-        {
-          headers: { Authorization: "Bearer " + token },
-        }
-      );
-      const data = await res.json();
-      console.log("Appointments Data:", data);
+  fetchTodaysAppointments() {
+    this.adminService.getTodaysAppointments().subscribe({
+      next: (data) => {
+        const appointments = Array.isArray(data.todaysAppointments) ? data.todaysAppointments : [];
+        const container = document.getElementById("todaysAppointmentsList")!;
+        container.innerHTML = "";
 
-      const appointments = Array.isArray(data.todaysAppointments)
-        ? data.todaysAppointments
-        : [];
-      const container = document.getElementById("todaysAppointmentsList")!;
-      container.innerHTML = "";
+        appointments.forEach((app: any) => {
+          const div = document.createElement("div");
+          div.className = "appointment-item";
 
-      appointments.forEach((app: any) => {
-        const div = document.createElement("div");
-        div.className = "appointment-item";
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "appointment-info";
+          const nameDiv = document.createElement("div");
+          nameDiv.className = "name";
+          nameDiv.textContent = app.patientName;
+          const detailsDiv = document.createElement("div");
+          detailsDiv.className = "details";
+          detailsDiv.textContent = `With Dr. ${app.doctorName}`;
+          infoDiv.appendChild(nameDiv);
+          infoDiv.appendChild(detailsDiv);
 
-        const infoDiv = document.createElement("div");
-        infoDiv.className = "appointment-info";
-        const nameDiv = document.createElement("div");
-        nameDiv.className = "name";
-        nameDiv.textContent = app.patientName;
-        const detailsDiv = document.createElement("div");
-        detailsDiv.className = "details";
-        detailsDiv.textContent = `With Dr. ${app.doctorName}`;
-        infoDiv.appendChild(nameDiv);
-        infoDiv.appendChild(detailsDiv);
+          const timeDiv = document.createElement("div");
+          timeDiv.className = "appointment-time";
+          timeDiv.textContent = app.time;
 
-        const timeDiv = document.createElement("div");
-        timeDiv.className = "appointment-time";
-        timeDiv.textContent = app.time;
+          const statusDiv = document.createElement("div");
+          statusDiv.className = `appointment-status status-${(app.status || "unknown").toLowerCase()}`;
+          statusDiv.textContent = app.status || "Unknown";
 
-        const statusDiv = document.createElement("div");
-        statusDiv.className = `appointment-status status-${(
-          app.status || "unknown"
-        ).toLowerCase()}`;
-        statusDiv.textContent = app.status || "Unknown";
-
-        div.appendChild(infoDiv);
-        div.appendChild(timeDiv);
-        div.appendChild(statusDiv);
-
-        container.appendChild(div);
-      });
-    } catch (error) {
-      console.error("Error fetching today's appointments:", error);
-    }
+          div.appendChild(infoDiv);
+          div.appendChild(timeDiv);
+          div.appendChild(statusDiv);
+          container.appendChild(div);
+        });
+      },
+      error: (err) => console.error(err)
+    });
   }
 
-  async renderCharts() {
-    const token = localStorage.getItem("authToken");
+  renderCharts() {
     const patientsCtx = (document.getElementById("patientsChart") as HTMLCanvasElement)?.getContext("2d");
     const appointmentsCtx = (document.getElementById("appointmentsChart") as HTMLCanvasElement)?.getContext("2d");
     const doctorsCtx = (document.getElementById("doctorsChart") as HTMLCanvasElement)?.getContext("2d");
 
-    try {
-      const [patientsRes, appointmentsRes, doctorsRes] = await Promise.all([
-        fetch("http://localhost:3000/api/admin/dashboard/patients-time-series", {
-          headers: { Authorization: "Bearer " + token },
-        }),
-        fetch("http://localhost:3000/api/admin/dashboard/appointments-time-series", {
-          headers: { Authorization: "Bearer " + token },
-        }),
-        fetch("http://localhost:3000/api/admin/dashboard/doctors-time-series", {
-          headers: { Authorization: "Bearer " + token },
-        }),
-      ]);
+    // Fetch all three charts in parallel
+    this.adminService.getPatientsTimeSeries().subscribe({
+      next: (patientsData) => this.adminService.getAppointmentsTimeSeries().subscribe({
+        next: (appointmentsData) => this.adminService.getDoctorsTimeSeries().subscribe({
+          next: (doctorsData) => this.createCharts(patientsData, appointmentsData, doctorsData, patientsCtx, appointmentsCtx, doctorsCtx)
+        })
+      })
+    });
+  }
 
-      const patientsData = await patientsRes.json();
-      const appointmentsData = await appointmentsRes.json();
-      const doctorsData = await doctorsRes.json();
+  private createCharts(patientsData: any, appointmentsData: any, doctorsData: any,
+    patientsCtx: CanvasRenderingContext2D | null,
+    appointmentsCtx: CanvasRenderingContext2D | null,
+    doctorsCtx: CanvasRenderingContext2D | null) {
 
-      function processTimeSeriesData(data: any[]) {
-        const labels: string[] = [];
-        const counts: number[] = [];
-        const dateMap = new Map();
-        data.forEach((item) => {
-          dateMap.set(item._id, item.count);
-        });
-        for (let i = 6; i >= 0; i--) {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          const dateStr = date.toISOString().split("T")[0];
-          labels.push(dateStr);
-          counts.push(dateMap.get(dateStr) || 0);
-        }
-        return { labels, counts };
+    const processTimeSeriesData = (data: any[]) => {
+      const labels: string[] = [];
+      const counts: number[] = [];
+      const dateMap = new Map();
+      data.forEach((item) => dateMap.set(item._id, item.count));
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split("T")[0];
+        labels.push(dateStr);
+        counts.push(dateMap.get(dateStr) || 0);
       }
+      return { labels, counts };
+    };
 
-      const patientsProcessed = processTimeSeriesData(patientsData);
-      const appointmentsProcessed = processTimeSeriesData(appointmentsData);
-      const doctorsProcessed = processTimeSeriesData(doctorsData);
+    const patientsProcessed = processTimeSeriesData(patientsData);
+    const appointmentsProcessed = processTimeSeriesData(appointmentsData);
+    const doctorsProcessed = processTimeSeriesData(doctorsData);
 
-      // @ts-ignore
-      new Chart(patientsCtx, {
-        type: "bar",
-        data: {
-          labels: patientsProcessed.labels,
-          datasets: [
-            { label: "Patients", data: patientsProcessed.counts, backgroundColor: "rgb(9, 102, 102)" },
-          ],
-        },
-      });
-
-      // @ts-ignore
-      new Chart(appointmentsCtx, {
-        type: "bar",
-        data: {
-          labels: appointmentsProcessed.labels,
-          datasets: [
-            { label: "Appointments", data: appointmentsProcessed.counts, backgroundColor: "rgb(9, 102, 102)" },
-          ],
-        },
-      });
-
-      // @ts-ignore
-      new Chart(doctorsCtx, {
-        type: "bar",
-        data: {
-          labels: doctorsProcessed.labels,
-          datasets: [
-            { label: "Doctors", data: doctorsProcessed.counts, backgroundColor: "rgb(9, 102, 102)" },
-          ],
-        },
-      });
-    } catch (error) {
-      console.error("Error rendering charts:", error);
-    }
+    if (patientsCtx) new Chart(patientsCtx, { type: "bar", data: { labels: patientsProcessed.labels, datasets: [{ label: "Patients", data: patientsProcessed.counts, backgroundColor: "rgb(9, 102, 102)" }] } });
+    if (appointmentsCtx) new Chart(appointmentsCtx, { type: "bar", data: { labels: appointmentsProcessed.labels, datasets: [{ label: "Appointments", data: appointmentsProcessed.counts, backgroundColor: "rgb(9, 102, 102)" }] } });
+    if (doctorsCtx) new Chart(doctorsCtx, { type: "bar", data: { labels: doctorsProcessed.labels, datasets: [{ label: "Doctors", data: doctorsProcessed.counts, backgroundColor: "rgb(9, 102, 102)" }] } });
   }
 }

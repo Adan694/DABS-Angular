@@ -1,0 +1,397 @@
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+ }
+
+ body {
+     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+     display: flex;
+     height: 100vh;
+     background-color: #e6f2ff;
+ }
+
+ .admin-layout {
+     display: flex;
+     width: 100%;
+     height: 100vh;
+     /* full viewport height */
+     overflow: hidden;
+ }
+
+
+
+ .main-content {
+     flex: 1;
+     margin-left: 5px;
+     /* space for sidebar */
+     padding: 20px;
+     background-color: #e6f2ff;
+     min-height: 100vh;
+     /* fill height next to sidebar */
+     overflow-y: auto;
+     border-radius: 12px;
+     transition: background-color 0.3s ease;
+ }
+
+
+ /* Content */
+ .content {
+     margin-left: 5px;
+     flex: 1;
+     padding: 20px;
+     background-color: #e6f2ff;
+     min-height: 100vh;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+     overflow-y: auto;
+     border-radius: 12px;
+     transition: background-color 0.3s ease;
+ }
+
+ .content:hover {
+     background-color: #d8eaf8;
+ }
+
+ /* Header */
+ .header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 16px 24px;
+     background-color: rgb(9, 102, 102);
+     color: white;
+     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+     border-radius: 8px;
+     transition: background-color 0.3s ease;
+ }
+
+ .header:hover {
+     background-color: #075b5b;
+ }
+
+ .header h1 {
+     font-size: 24px;
+     margin: 0;
+ }
+
+ /* Menu Bar Icon */
+ #bar {
+     display: none;
+     font-size: 30px;
+     cursor: pointer;
+     transition: color 0.3s ease;
+ }
+
+ #bar:hover {
+     color: #28a745;
+ }
+
+ .logout-button {
+     background-color: #28a745;
+     color: #fff;
+     padding: 10px 16px;
+     border: none;
+     border-radius: 5px;
+     font-weight: bold;
+     cursor: pointer;
+     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+     box-shadow: 0 3px 6px rgba(40, 167, 69, 0.4);
+ }
+
+ .logout-button:hover {
+     background-color: #b02a37;
+     box-shadow: 0 5px 12px rgba(176, 42, 55, 0.7);
+ }
+
+ .doctor-list {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 20px;
+     padding: 20px 24px;
+ }
+
+ .card {
+     background: #fff;
+     border-radius: 10px;
+     border: 1px solid #ddd;
+     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.07);
+     padding: 20px;
+     max-width: calc(33.333% - 20px);
+     flex: 1 1 calc(33.333% - 20px);
+     display: flex;
+     flex-direction: column;
+     justify-content: space-between;
+     transition: transform 0.2s ease, box-shadow 0.2s ease,
+         border-color 0.3s ease;
+     cursor: pointer;
+ }
+
+ .card:hover {
+     transform: translateY(-6px);
+     box-shadow: 4px 8px 18px rgba(0, 0, 0, 0.12);
+     border-color: rgb(9, 102, 102);
+ }
+
+ .card img {
+     width: 100px;
+     height: 100px;
+     border-radius: 50%;
+     object-fit: cover;
+     margin-bottom: 15px;
+     border: 2px solid transparent;
+     transition: border-color 0.3s ease;
+ }
+
+ .card:hover img {
+     border-color: rgb(9, 102, 102);
+ }
+
+ .doctor-name {
+     font-size: 20px;
+     font-weight: 700;
+     color: #1a1a1a;
+     margin-bottom: 5px;
+ }
+
+ .specialty {
+     font-size: 16px;
+     font-weight: 600;
+     color: #00796b;
+     margin-bottom: 5px;
+ }
+
+ .experience,
+ .rating,
+ .about {
+     font-size: 14px;
+     color: #555555;
+     margin-bottom: 5px;
+ }
+
+ .rating {
+     color: #f5c518;
+     font-weight: 600;
+ }
+
+ button {
+     margin: 8px 10px;
+     padding: 10px 15px;
+     background-color: #006d6d;
+     color: #fff;
+     border: none;
+     border-radius: 25px;
+     cursor: pointer;
+     transition: all 0.3s ease;
+ }
+
+ button:hover {
+     background-color: #009688;
+     transform: scale(1.05);
+ }
+
+ .btn-edit {
+     background-color: #007bff;
+ }
+
+ .btn-edit:hover {
+     background-color: #0056b3;
+ }
+
+ .btn-delete {
+     background-color: #dc3545;
+ }
+
+ .btn-delete:hover {
+     background-color: #a71d2a;
+ }
+
+ nav::-webkit-scrollbar {
+     width: 6px;
+ }
+
+ nav::-webkit-scrollbar-thumb {
+     background-color: rgba(0, 0, 0, 0.1);
+     border-radius: 6px;
+ }
+
+ #overlay {
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     background: rgba(0, 0, 0, 0.4);
+     z-index: 900;
+     display: none;
+ }
+
+ #overlay.active {
+     display: block;
+ }
+ .specialty {
+     text-transform: lowercase;
+ }
+
+ .specialty::first-letter {
+     text-transform: uppercase;
+ }
+
+ @media (max-width: 1024px) {
+     .card {
+         max-width: calc(50% - 20px);
+         flex: 1 1 calc(50% - 20px);
+     }
+ }
+
+ @media (max-width: 768px) {
+     body {
+         flex-direction: column;
+     }
+
+         .sidebar {
+             display: none;
+             top: 0;
+             left: -250px;
+             height: 100%;
+             z-index: 1000;
+             transition: left 0.3s ease-in-out;
+         }
+    
+         .sidebar.active {
+             display: flex;
+             left: 0;
+         }
+    
+         #bar {
+             display: block;
+             background: none;
+             border: none;
+             color: white;
+             font-size: 26px;
+             cursor: pointer;
+         }
+    
+         #bar:focus {
+             outline: none;
+         }
+     .header {
+         flex-direction: row;
+         gap: 20px;
+         font-size: 22px;
+         align-items: flex-start;
+     }
+
+     .doctor-list {
+         padding: 10px;
+     }
+
+     .card {
+         max-width: 100%;
+         flex: 1 1 100%;
+     }
+
+     .modal-content {
+         width: 90%;
+     }
+
+     #logoutBtn {
+         margin-left: auto;
+     }
+ }
+
+ @media (max-width: 480px) {
+     .header h1 {
+         font-size: 20px;
+     }
+
+     .logout-button {
+         padding: 8px 12px;
+         font-size: 14px;
+     }
+
+     .card {
+         padding: 15px;
+     }
+
+     .doctor-name {
+         font-size: 18px;
+     }
+
+     .specialty,
+     .experience,
+     .rating,
+     .about {
+         font-size: 13px;
+     }
+ }
+
+ #overlay {
+     display: none;
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     background: rgba(0, 0, 0, 0.4);
+     z-index: 800;
+     justify-content: center;
+     align-items: center;
+ }
+
+ #overlay.active {
+     display: flex;
+     /* only show when active */
+ }
+
+ .loader {
+     border: 6px solid #f3f3f3;
+     border-top: 6px solid #006d6d;
+     border-radius: 50%;
+     width: 50px;
+     height: 50px;
+     animation: spin 1s linear infinite;
+ }
+
+ @keyframes spin {
+     0% {
+         transform: rotate(0deg);
+     }
+
+     100% {
+         transform: rotate(360deg);
+     }
+ }
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        transform: translateX(-250px);
+        transition: transform 0.3s ease;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 1000;
+    }
+
+    .sidebar-wrapper.active {
+        transform: translateX(0);
+    }
+
+    #overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 900;
+    }
+
+    #overlay.active {
+        display: block;
+    }
+
+    #bar {
+        display: block;
+    }
+}

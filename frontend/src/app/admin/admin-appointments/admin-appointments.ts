@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { AdminService } from '../../services/admin';
 
 declare const Chart: any;
 
@@ -21,18 +23,39 @@ export class AdminAppointments implements OnInit {
   currentPage = { upcoming: 1, completed: 1, missed: 1 };
   itemsPerPage = 5;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router, private adminService: AdminService) {}
 
   ngOnInit(): void {
     this.fetchAppointments();
+  const bar = document.getElementById('bar');
+  const sidebar = document.querySelector('app-admin-sidebar');
+  const overlay = document.getElementById('overlay');
+
+  if (bar && sidebar && overlay) {
+    bar.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
   }
+  }
+   logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    sessionStorage.clear();
+    alert('You have been logged out successfully.');
+     this.router.navigate(['/login']);
+  }
+
 
   // Fetch all appointments from backend
   fetchAppointments() {
-    this.http.get<any>('http://localhost:3000/api/appointments/all')
-      .subscribe({
-        next: (response) => {
-          console.log('Appointments Data:', response);
+   this.adminService.getAllAppointments().subscribe({
+    next: (response) => {
 
           // Separate appointments by status
           this.upcomingAppointments = response.filter((a: any) => a.status === 'pending');
@@ -43,8 +66,7 @@ export class AdminAppointments implements OnInit {
 
         allAppointments.forEach(appt => {
           if (appt.doctorId && typeof appt.doctorId === 'string') {
-            this.http.get<any>(`http://localhost:3000/api/doctors/${appt.doctorId}`)
-              .subscribe({
+                     this.adminService.getDoctorById(appt.doctorId).subscribe({
                 next: (doctor) => {
                   appt.doctorName = doctor.name;
                 },
@@ -116,8 +138,7 @@ export class AdminAppointments implements OnInit {
 
   // Open reschedule modal and load available slots
   openRescheduleModal(appointmentId: string, doctorId: string) {
-    this.http.get<any>(`http://localhost:3000/api/doctors/${doctorId}/availability`)
-      .subscribe({
+      this.adminService.getDoctorAvailability(doctorId).subscribe({
         next: (data) => {
           this.availableSlots = [];
           (data.availabilitySlots || []).forEach((day: any) => {
@@ -145,8 +166,7 @@ export class AdminAppointments implements OnInit {
     }
 
     const [date, time] = selectedSlot.split('|');
-    this.http.put(`http://localhost:3000/api/appointments/${appointmentId}/reschedule`, { date, time })
-      .subscribe({
+      this.adminService.rescheduleAppointment(appointmentId, date, time).subscribe({
         next: () => {
           this.closeModal();
           this.showSuccessPopup();

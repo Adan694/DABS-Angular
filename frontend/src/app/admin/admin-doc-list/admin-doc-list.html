@@ -1,1 +1,45 @@
-<p>admin-doc-list works!</p>
+<div class="admin-layout d-flex">
+  <div class="sidebar-wrapper" [class.active]="isSidebarActive">
+    <app-admin-sidebar></app-admin-sidebar>
+  </div>
+
+  <div id="overlay" [class.active]="isSidebarActive" (click)="closeSidebar()"></div>
+
+  <div class="loader" *ngIf="loading"></div>
+  <div class="content flex-grow-1">
+    <div class="header d-flex justify-content-between align-items-center">
+      <i id="bar" class="fa-solid fa-bars" (click)="toggleSidebar()"></i>
+      <h1>All Doctors</h1>
+      <button id="logoutBtn">Logout</button>
+    </div>
+
+    <!-- Doctor list -->
+    <div class="doctor-list" id="doctorList">
+      <div class="card" *ngFor="let doctor of doctors" [attr.data-id]="doctor._id">
+        <a
+          [routerLink]="['/admin/doctor', doctor._id]"
+          style="text-decoration: none; color: inherit"
+        >
+          <img
+            *ngIf="doctor.photo"
+            [src]="'http://localhost:3000/uploads/' + doctor.photo"
+            [alt]="doctor.name"
+          />
+          <div class="doctor-info">
+            <p class="doctor-name">{{ doctor.name }}</p>
+            <p class="specialty">{{ doctor.speciality }}</p>
+            <p class="experience">Experience: {{ doctor.experience }} Years</p>
+            <p class="about">{{ doctor.about }}</p>
+          </div>
+        </a>
+
+        <div class="btn-group" *ngIf="userRole === 'admin'">
+          <button class="btn btn-delete" (click)="deleteDoctor(doctor._id)">Delete</button>
+          <button class="btn btn-appointments" (click)="seeAppointments(doctor._id)">
+            See Appointments
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

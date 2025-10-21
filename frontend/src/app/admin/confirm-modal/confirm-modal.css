@@ -1,0 +1,42 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999 !important;
+}
+
+.modal {
+    background: #fff;
+    padding: 24px 28px;
+    border-radius: 10px;
+    width: 350px;
+    max-width: 90vw;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    z-index: 100000 !important;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-cancel {
+    flex: 1;
+    background: #ccc;
+    color: #333;
+    margin-right: 10px;
+}
+
+.btn-delete {
+    flex: 1;
+    background: #e74c3c;
+    color: white;
+}
