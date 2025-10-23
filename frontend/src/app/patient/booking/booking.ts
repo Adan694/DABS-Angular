@@ -107,28 +107,30 @@ constructor(
   showModal: boolean = false;
 openModal() {
   if (!this.selectedDate || !this.selectedTime) return;
-  this.message = ''; 
+  this.message = '';
   this.showModal = true;
+  document.body.classList.add('modal-open'); 
 }
 
 closeModal() {
   this.showModal = false;
-  }
+  document.body.classList.remove('modal-open'); 
+}
+
   
   confirmBooking() {
   const patientId = localStorage.getItem('patientId');
   const token = localStorage.getItem('authToken');
 
-  // 🧩 1️⃣ Not logged in check
   if (!patientId || !token) {
-    this.showPopupMessage('⚠️ You are not logged in. Redirecting to login page...');
+    this.showPopupMessage(' You are not logged in. Redirecting to login page...');
     setTimeout(() => {
       window.location.href = '/login';
     }, 2000);
     return;
   }
 
-  // 🧩 2️⃣ Validate inputs
+  //  Validate inputs
   if (
     !this.selectedDate ||
     !this.selectedTime ||
@@ -138,13 +140,13 @@ closeModal() {
     !this.patientAge ||
     !this.patientIssue
   ) {
-    this.showPopupMessage('❗ Please fill all required fields.');
+    this.showPopupMessage(' Please fill all required fields.');
     return;
   }
 
-  this.loading = true; // ⏳ Show loading on button
+  this.loading = true; //  Show loading on button
 
-  // 🧩 3️⃣ Check existing appointments first
+  //  Check existing appointments first
   this.appointmentService.getAppointments(patientId).subscribe({
     next: (appointments) => {
       const conflict = appointments.some(
@@ -156,11 +158,11 @@ closeModal() {
 
       if (conflict) {
         this.loading = false;
-        this.showPopupMessage('⚠️ You already have an appointment at this time.');
+        this.showPopupMessage(' You already have an appointment at this time.');
         return;
       }
 
-      // 🧩 4️⃣ No conflict → proceed with booking
+      //  No conflict → proceed with booking
       const payload = {
         patientId,
         doctorId: this.doctorId,
@@ -177,23 +179,20 @@ closeModal() {
         next: (res: any) => {
           this.loading = false;
 
-          if (res.success) {
-            // ✅ Close modal before showing popup
-            this.showModal = false;
-
-            // ✅ Reset form fields (optional)
-            this.selectedTime = '';
-            this.patientIssue = '';
-
-            // ✅ Show success message
-            this.showPopupMessage(`✅ Appointment booked for ${this.selectedDate} at ${this.selectedTime}.`);
-          } else {
-            this.showPopupMessage(`❌ Booking failed: ${res.message}`);
+         if (res.success) {
+  this.showModal = false;
+  document.body.classList.remove('modal-open'); 
+  this.selectedTime = '';
+  this.patientIssue = '';
+  this.showPopupMessage(`Appointment booked for ${this.selectedDate} at ${this.selectedTime}.`);
+}
+ else {
+            this.showPopupMessage(` Booking failed: ${res.message}`);
           }
         },
         error: (err) => {
           this.loading = false;
-          this.showPopupMessage('❌ Network error: ' + err.message);
+          this.showPopupMessage(' Network error: ' + err.message);
         },
       });
     },
@@ -205,8 +204,7 @@ closeModal() {
   });
 }
 
-
-// ✅ Helper to handle popup messages
+//  Helper to handle popup messages
 showPopupMessage(msg: string) {
   this.message = msg;
   this.showPopup = true;

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Chart } from 'chart.js/auto';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { AdminService } from '../../services/admin';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-panel',
@@ -13,13 +14,13 @@ import { AdminService } from '../../services/admin';
   styleUrls: ['./admin-panel.css']
 })
 export class AdminPanel implements OnInit, AfterViewInit {
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit(): void {
     const role = localStorage.getItem("userRole");
     if (role !== "admin") {
       alert("Access denied. Admins only.");
-      window.location.href = "login.html";
+  this.router.navigate(['/login']);
       return;
     }
     this.fetchDashboardStats();
@@ -46,7 +47,7 @@ export class AdminPanel implements OnInit, AfterViewInit {
     logoutBtn?.addEventListener("click", () => {
       localStorage.removeItem("authToken");
       localStorage.removeItem("userRole");
-      window.location.href = "login.html";
+  this.router.navigate(['/login']);
     });
   }
 

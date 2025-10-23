@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { CommonModule } from '@angular/common';
-import { DoctorService } from '../../services/doctor'; // import the service
+import { DoctorService } from '../../services/doctor'; 
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-doc-list',
-  imports: [RouterLink, AdminSidebar, CommonModule],
+  imports: [RouterLink, AdminSidebar, CommonModule, FormsModule],
   templateUrl: './admin-doc-list.html',
   styleUrls: ['./admin-doc-list.css']
 })
@@ -15,6 +16,8 @@ export class AdminDocList implements OnInit {
   userRole: string = '';
   loading = false;
   isSidebarActive = false;
+  searchQuery: string = '';
+filteredDoctors: any[] = [];
 
   constructor(private doctorService: DoctorService, private router: Router) {}
 
@@ -31,26 +34,51 @@ export class AdminDocList implements OnInit {
     this.isSidebarActive = false;
   }
 
-  logout() {
+   logout() {
+    console.log('[AdminDocList] Logging out user...');
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('patientId');
+    localStorage.removeItem('patientName');
+    localStorage.removeItem('patientEmail');
+
+    console.log('[AdminDocList] Cleared session data. Redirecting to login...');
     this.router.navigate(['/login']);
   }
 
-  fetchDoctors() {
+ fetchDoctors() {
     this.loading = true;
+    console.log('Fetching doctors from service...');
+    
     this.doctorService.getAllDoctors().subscribe({
       next: (response: any) => {
-        this.doctors = response;
+        console.log('Fetched doctors:', response);
+        this.doctors = response || [];
+        this.filteredDoctors = [...this.doctors]; 
         this.loading = false;
       },
       error: (error) => {
         console.error('Error fetching doctors:', error);
+        this.doctors = [];
+        this.filteredDoctors = [];
         this.loading = false;
       }
     });
   }
 
+  filterDoctors() {
+    const query = this.searchQuery.trim().toLowerCase();
+    if (!query) {
+      this.filteredDoctors = [...this.doctors]; 
+      return;
+    }
+
+    this.filteredDoctors = this.doctors.filter(
+      (doctor) =>
+        doctor.name?.toLowerCase().includes(query) ||
+        doctor.speciality?.toLowerCase().includes(query)
+    );
+  }
   seeAppointments(doctorId: string) {
     this.router.navigate(['/admin/doctor-appointments', doctorId]);
   }

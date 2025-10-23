@@ -17,173 +17,192 @@
       </header>
 
       <section class="appointments-section">
-        <!-- ===== UPCOMING APPOINTMENTS ===== -->
-        <div class="table-responsive">
-          <h2>Upcoming Appointments</h2>
-          <table
-            class="appointments-table table table-bordered table-striped align-middle text-center"
-          >
-            <thead class="table-dark">
-              <tr>
-                <th>Patient</th>
-                <th>Doctor</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let appt of paginatedUpcoming">
-                <td>{{ appt.name }}</td>
-                <td>{{ appt.doctorId?.name || appt.doctorName || 'N/A' }}</td>
-                <td>{{ appt.date | date }}</td>
-                <td>{{ appt.time }}</td>
-                <td>{{ appt.status }}</td>
-              </tr>
-              <tr *ngIf="!upcomingAppointments.length">
-                <td colspan="5">No upcoming appointments</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- ====== Tabs Navigation ====== -->
+        <ul class="nav nav-tabs justify-content-center mb-4" id="appointmentsTabs">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'upcoming'"
+              (click)="setActiveTab('upcoming')"
+              >Upcoming</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'completed'"
+              (click)="setActiveTab('completed')"
+              >Completed</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'missed'"
+              (click)="setActiveTab('missed')"
+              >Missed/Completed</a
+            >
+          </li>
+        </ul>
+
+        <!-- ====== Upcoming Appointments ====== -->
+        <div *ngIf="activeTab === 'upcoming'">
+          <div class="table-responsive">
+            <h2>Upcoming Appointments</h2>
+            <table
+              class="appointments-table table table-bordered table-striped align-middle text-center"
+            >
+              <thead class="table-dark">
+                <tr>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let appt of paginatedUpcoming">
+                  <td>{{ appt.name }}</td>
+                  <td>{{ appt.doctorId?.name || appt.doctorName || 'N/A' }}</td>
+                  <td>{{ appt.date | date }}</td>
+                  <td>{{ appt.time }}</td>
+                  <td>{{ appt.status }}</td>
+                </tr>
+                <tr *ngIf="!upcomingAppointments.length">
+                  <td colspan="5">No upcoming appointments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-controls" *ngIf="upcomingAppointments.length > itemsPerPage">
+            <button
+              class="btn btn-primary"
+              (click)="prevPage('upcoming')"
+              [disabled]="currentPage.upcoming === 1"
+            >
+              Prev
+            </button>
+            <span
+              >Page {{ currentPage.upcoming }} of
+              {{ Math.ceil(upcomingAppointments.length / itemsPerPage) }}</span
+            >
+            <button
+              class="btn btn-primary"
+              (click)="nextPage('upcoming')"
+              [disabled]="
+                currentPage.upcoming >= Math.ceil(upcomingAppointments.length / itemsPerPage)
+              "
+            >
+              Next
+            </button>
+          </div>
         </div>
 
-        <!-- Pagination Controls -->
-        <div
-          class="pagination-controls d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3"
-          *ngIf="upcomingAppointments.length > itemsPerPage"
-        >
-          <button
-            class="btn btn-primary"
-            (click)="prevPage('upcoming')"
-            [disabled]="currentPage.upcoming === 1"
-          >
-            Prev
-          </button>
-          <span
-            >Page {{ currentPage.upcoming }} of
-            {{ Math.ceil(upcomingAppointments.length / itemsPerPage) }}</span
-          >
-          <button
-            class="btn btn-primary"
-            (click)="nextPage('upcoming')"
-            [disabled]="
-              currentPage.upcoming >= Math.ceil(upcomingAppointments.length / itemsPerPage)
-            "
-          >
-            Next
-          </button>
+        <!-- ====== Completed Appointments ====== -->
+        <div *ngIf="activeTab === 'completed'">
+          <div class="table-responsive">
+            <h2>Completed Appointments</h2>
+            <table
+              class="appointments-table table table-bordered table-striped align-middle text-center"
+            >
+              <thead class="table-dark">
+                <tr>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let appt of paginatedCompleted">
+                  <td>{{ appt.name }}</td>
+                  <td>{{ appt.doctorId?.name || appt.doctorName || 'N/A' }}</td>
+                  <td>{{ appt.date | date }}</td>
+                  <td>{{ appt.time }}</td>
+                  <td>{{ appt.status }}</td>
+                </tr>
+                <tr *ngIf="!completedAppointments.length">
+                  <td colspan="5">No completed appointments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-controls" *ngIf="completedAppointments.length > itemsPerPage">
+            <button
+              class="btn btn-primary"
+              (click)="prevPage('completed')"
+              [disabled]="currentPage.completed === 1"
+            >
+              Prev
+            </button>
+            <span
+              >Page {{ currentPage.completed }} of
+              {{ Math.ceil(completedAppointments.length / itemsPerPage) }}</span
+            >
+            <button
+              class="btn btn-primary"
+              (click)="nextPage('completed')"
+              [disabled]="
+                currentPage.completed >= Math.ceil(completedAppointments.length / itemsPerPage)
+              "
+            >
+              Next
+            </button>
+          </div>
         </div>
 
-        <!-- ===== COMPLETED APPOINTMENTS ===== -->
-        <div class="table-responsive mt-5">
-          <h2>Completed Appointments</h2>
-          <table
-            class="appointments-table table table-bordered table-striped align-middle text-center"
-          >
-            <thead class="table-dark">
-              <tr>
-                <th>Patient</th>
-                <th>Doctor</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let appt of paginatedCompleted">
-                <td>{{ appt.name }}</td>
-                <td>{{ appt.doctorId?.name || appt.doctorName || 'N/A' }}</td>
-                <td>{{ appt.date | date }}</td>
-                <td>{{ appt.time }}</td>
-                <td>{{ appt.status }}</td>
-              </tr>
-              <tr *ngIf="!completedAppointments.length">
-                <td colspan="5">No completed appointments</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination Controls -->
-        <div
-          class="pagination-controls d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3"
-          *ngIf="completedAppointments.length > itemsPerPage"
-        >
-          <button
-            class="btn btn-primary"
-            (click)="prevPage('completed')"
-            [disabled]="currentPage.completed === 1"
-          >
-            Prev
-          </button>
-          <span
-            >Page {{ currentPage.completed }} of
-            {{ Math.ceil(completedAppointments.length / itemsPerPage) }}</span
-          >
-          <button
-            class="btn btn-primary"
-            (click)="nextPage('completed')"
-            [disabled]="
-              currentPage.completed >= Math.ceil(completedAppointments.length / itemsPerPage)
-            "
-          >
-            Next
-          </button>
-        </div>
-
-        <!-- ===== MISSED APPOINTMENTS ===== -->
-        <div class="table-responsive mt-5">
-          <h2>Missed Appointments</h2>
-          <table
-            class="appointments-table table table-bordered table-striped align-middle text-center"
-          >
-            <thead class="table-dark">
-              <tr>
-                <th>Patient</th>
-                <th>Doctor</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let appt of paginatedMissed">
-                <td>{{ appt.name }}</td>
-                <td>{{ appt.doctorId?.name || appt.doctorName || 'N/A' }}</td>
-                <td>{{ appt.date | date }}</td>
-                <td>{{ appt.time }}</td>
-                <td>{{ appt.status }}</td>
-              </tr>
-              <tr *ngIf="!missedAppointments.length">
-                <td colspan="5">No missed appointments</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination Controls -->
-        <div
-          class="pagination-controls d-flex justify-content-center align-items-center gap-3 flex-wrap mt-3"
-          *ngIf="missedAppointments.length > itemsPerPage"
-        >
-          <button
-            class="btn btn-primary"
-            (click)="prevPage('missed')"
-            [disabled]="currentPage.missed === 1"
-          >
-            Prev
-          </button>
-          <span
-            >Page {{ currentPage.missed }} of
-            {{ Math.ceil(missedAppointments.length / itemsPerPage) }}</span
-          >
-          <button
-            class="btn btn-primary"
-            (click)="nextPage('missed')"
-            [disabled]="currentPage.missed >= Math.ceil(missedAppointments.length / itemsPerPage)"
-          >
-            Next
-          </button>
+        <!-- ====== Missed Appointments ====== -->
+        <div *ngIf="activeTab === 'missed'">
+          <div class="table-responsive">
+            <h2>Missed / Cancelled Appointments</h2>
+            <table
+              class="appointments-table table table-bordered table-striped align-middle text-center"
+            >
+              <thead class="table-dark">
+                <tr>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let appt of paginatedMissed">
+                  <td>{{ appt.name }}</td>
+                  <td>{{ appt.doctorId?.name || appt.doctorName || 'N/A' }}</td>
+                  <td>{{ appt.date | date }}</td>
+                  <td>{{ appt.time }}</td>
+                  <td>{{ appt.status }}</td>
+                </tr>
+                <tr *ngIf="!missedAppointments.length">
+                  <td colspan="5">No missed appointments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-controls" *ngIf="missedAppointments.length > itemsPerPage">
+            <button
+              class="btn btn-primary"
+              (click)="prevPage('missed')"
+              [disabled]="currentPage.missed === 1"
+            >
+              Prev
+            </button>
+            <span
+              >Page {{ currentPage.missed }} of
+              {{ Math.ceil(missedAppointments.length / itemsPerPage) }}</span
+            >
+            <button
+              class="btn btn-primary"
+              (click)="nextPage('missed')"
+              [disabled]="currentPage.missed >= Math.ceil(missedAppointments.length / itemsPerPage)"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </section>
     </main>

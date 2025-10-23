@@ -51,6 +51,13 @@ export class AdminAppointments implements OnInit {
      this.router.navigate(['/login']);
   }
 
+  activeTab: 'upcoming' | 'completed' | 'missed' = 'upcoming';
+
+setActiveTab(tab: 'upcoming' | 'completed' | 'missed') {
+  this.activeTab = tab;
+}
+
+
 
   // Fetch all appointments from backend
   fetchAppointments() {

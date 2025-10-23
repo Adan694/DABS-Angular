@@ -28,12 +28,10 @@
     width: 250px;
     height: 100%;
     transform: translateX(0);
-    /* visible by default */
     transition: transform 0.3s ease;
     z-index: 1000;
 }
 
-/* On small screens: hide initially */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -44,39 +42,37 @@
     }
 }
 
-   header {
-       background-color: #166e6b;
-       color: white;
-       padding: 20px 16px;
-       font-size: 28px;
-       font-weight: 700;
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-       box-sizing: border-box;
-       border-bottom: 2px solid white;
-   }
+  header {
+      background-color: #166e6b;
+      color: white;
+      border-bottom: 2px solid white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      font-size: 28px;
+      font-weight: 700;
+      box-sizing: border-box;
+  }
 
-   header button {
-       background-color: #28a745;
-       border: none;
-       color: white;
-       padding: 10px 22px;
-       font-size: 16px;
-       border-radius: 6px;
-       cursor: pointer;
-       transition: background-color 0.3s ease;
-   }
+  #bar {
+      display: none;
+  }
 
-   header button:hover {
-       background-color: #1e7e34;
-   }
+  header button {
+      background-color: #28a745;
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
 
-   #bar {
-       display: none;
-       font-size: 30px;
-       cursor: pointer;
-   }
+  header button:hover {
+      background-color: #1e7e34;
+  }
 
    .main-content {
        flex: 1;
@@ -226,11 +222,11 @@
        display: inline-flex;
        align-items: center;
        gap: 8px;
+       width: 130px;
        transition: all 0.3s ease;
        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
    }
 
-   /* Activate button: green, matches your theme */
    .activate-btn {
        background-color: #28a745;
        color: #fff;
@@ -241,7 +237,6 @@
        transform: translateY(-2px);
    }
 
-   /* Deactivate button: teal/red combo */
    .deactivate-btn {
        background-color: #dc3545;
        color: #fff;
@@ -381,7 +376,6 @@
            margin-bottom: 6px;
        }
 
-       /* Make actions buttons stack nicely */
        .table-buttons {
            display: flex;
            flex-wrap: wrap;
@@ -408,14 +402,14 @@
        margin: 20px 0;
        display: flex;
        justify-content: flex-end;
-       margin-right: 800px;
+       margin-right: 400px;
    }
 
    .search-container input {
        padding: 10px;
        border-radius: 8px;
        border: 1px solid #ccc;
-       width: 250px;
+       width: 350px;
    }
 
    .pagination {
@@ -468,5 +462,57 @@
 
        100% {
            transform: rotate(360deg);
+       }
+   }
+
+   @media (max-width: 1200px) {
+       .search-container {
+           justify-content: center;
+           margin-right: 0;
+       }
+
+       .search-container input {
+           width: 300px;
+       }
+   }
+
+   /* 📱 Tablets and small laptops */
+   @media (max-width: 992px) {
+       .search-container {
+           justify-content: center;
+           margin: 15px 0;
+       }
+
+       .search-container input {
+           width: 260px;
+           font-size: 15px;
+       }
+   }
+
+   /* 📱 Mobile landscape */
+   @media (max-width: 768px) {
+       .search-container {
+           justify-content: center;
+           margin: 10px 0;
+       }
+
+       .search-container input {
+           width: 220px;
+           font-size: 14px;
+           padding: 8px 12px;
+       }
+   }
+
+   /* 📱 Mobile portrait */
+   @media (max-width: 480px) {
+       .search-container {
+           justify-content: center;
+           margin: 8px 0;
+       }
+
+       .search-container input {
+           width: 180px;
+           font-size: 13px;
+           padding: 7px 10px;
        }
    }
