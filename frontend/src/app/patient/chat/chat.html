@@ -1,0 +1,38 @@
+<app-navbar></app-navbar>
+<div class="chat-container">
+  <div class="chat-header">
+    <i
+      class="fa-solid fa-arrow-left"
+      (click)="goBack()"
+      style="cursor: pointer; margin-right: 10px"
+    ></i>
+    💬 Chat with Admin
+  </div>
+
+  <div class="chat-messages">
+    <div
+      *ngFor="let msg of messages"
+      class="message"
+      [class.sent]="msg.senderId === currentUserId"
+      [class.received]="msg.senderId !== currentUserId"
+    >
+      <div class="sender-label">
+        {{ msg.senderId === currentUserId ? 'You' : 'Admin' }}
+      </div>
+      <div class="message-text">
+        {{ msg.message }}
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input
+      type="text"
+      [(ngModel)]="newMessage"
+      placeholder="Type your message..."
+      (keyup.enter)="sendMessage()"
+    />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>
+<app-footer></app-footer>

@@ -20,7 +20,27 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: #e6f2ff;
 }
+.chat-fab {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #166e6b;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
 
+.chat-fab:hover {
+    background-color: #145956;
+    transform: scale(1.05);
+}
 .wrapper {
     flex: 1;
     display: flex;

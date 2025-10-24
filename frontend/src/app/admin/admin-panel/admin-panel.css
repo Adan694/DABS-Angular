@@ -362,3 +362,39 @@ header button:hover {
     font-size: 14px;
   }
 }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-btn {
+  background: #166e6b;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  position: relative;
+  transition: background 0.3s ease;
+}
+
+.chat-btn:hover {
+  background: #145956;
+}
+
+.badge {
+  background: #ff4b4b;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  right: -8px;
+}

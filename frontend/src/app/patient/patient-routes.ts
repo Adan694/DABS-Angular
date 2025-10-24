@@ -8,6 +8,7 @@ import { Feedback } from './feedback/feedback';
 import { MyAppointments } from './my-appointments/my-appointments';
 import { MyProfile } from './my-profile/my-profile';
 import { Booking } from './booking/booking';
+import { Chat } from './chat/chat';
 
 export const routes: Routes = [
   { path: '', component: Dashboard },
@@ -20,5 +21,7 @@ export const routes: Routes = [
   { path: 'contactus', component: ContactUs },
   { path: 'all-doctors/:speciality', component: AllDoctors },
   { path: 'all-doctors', component: AllDoctors },
-  {path: 'booking', component: Booking},
+  { path: 'booking', component: Booking },
+  { path: 'chat', component: Chat },
+
 ];

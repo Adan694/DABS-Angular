@@ -6,7 +6,15 @@
     <header>
       <i id="bar" class="fa-solid fa-bars"></i>
       <div>Admin Dashboard</div>
-      <button id="logoutBtn">Logout</button>
+
+      <div class="header-actions">
+        <button class="chat-btn" routerLink="/admin/chat">
+          <i class="fa-solid fa-comments"></i> Messages
+          <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+        </button>
+
+        <button id="logoutBtn">Logout</button>
+      </div>
     </header>
 
     <section class="dashboard-cards">

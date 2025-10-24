@@ -4,12 +4,12 @@ import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [Navbar, Footer, CommonModule, FormsModule],
+  imports: [Navbar, Footer, CommonModule, FormsModule, RouterLink],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.css'
 })

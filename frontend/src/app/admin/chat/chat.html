@@ -1,0 +1,68 @@
+<div class="admin-chat-container">
+  <!-- 🟩 LEFT SIDEBAR -->
+  <div class="chat-sidebar">
+    <button class="dashboard-btn" (click)="goToDashboard()">Back to Dashboard</button>
+    <h3>💬 Patients</h3>
+
+    <ul>
+      <li
+        *ngFor="let chat of chats"
+        (click)="openChat(chat)"
+        (contextmenu)="onRightClick($event, chat)"
+        [class.active]="selectedChat?._id === chat._id"
+        [class.unread]="chat.unreadCount > 0"
+      >
+        <span>{{ chat.name || chat.email }}</span>
+
+        <span *ngIf="chat.unreadCount > 0" class="unread-badge">
+          {{ chat.unreadCount }}
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ✅ RIGHT CHAT WINDOW -->
+  <div class="chat-window" *ngIf="selectedChat; else noChat">
+    <div class="chat-header">
+      <h4>Chat with {{ selectedChat.name || selectedChat.email }}</h4>
+    </div>
+
+    <div class="chat-messages">
+      <div
+        *ngFor="let msg of messages"
+        class="message"
+        [class.sent]="msg.senderId === currentUserId"
+        [class.received]="msg.senderId !== currentUserId"
+      >
+        <span>{{ msg.message }}</span>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input
+        type="text"
+        [(ngModel)]="newMessage"
+        placeholder="Type your message..."
+        (keyup.enter)="sendMessage()"
+      />
+      <button (click)="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- 🧩 Empty State -->
+  <ng-template #noChat>
+    <div class="no-chat">Select a patient to start chatting.</div>
+  </ng-template>
+
+  <!-- 📜 Context Menu (placed outside sidebar so it’s not clipped) -->
+  <div
+    *ngIf="contextMenuVisible"
+    class="context-menu"
+    [style.top.px]="menuY"
+    [style.left.px]="menuX"
+    (mouseleave)="hideContextMenu()"
+  >
+    <button (click)="clearChat(selectedChatContext)">🧹 Clear Chat</button>
+    <button (click)="deleteChat(selectedChatContext)">🗑️ Delete Chat</button>
+  </div>
+</div>

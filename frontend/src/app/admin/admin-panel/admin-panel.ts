@@ -3,18 +3,28 @@ import { CommonModule } from '@angular/common';
 import { Chart } from 'chart.js/auto';
 import { AdminSidebar } from '../admin-sidebar/admin-sidebar';
 import { AdminService } from '../../services/admin';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { SocketService } from '../../services/socket';
+import { ChatService } from '../../services/chat';
+
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, AdminSidebar],
+  imports: [CommonModule, AdminSidebar, RouterLink],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './admin-panel.html',
   styleUrls: ['./admin-panel.css']
 })
 export class AdminPanel implements OnInit, AfterViewInit {
-  constructor(private adminService: AdminService, private router: Router) {}
+constructor(
+  private adminService: AdminService,
+  private router: Router,
+  private socketService: SocketService,
+  private chatService: ChatService
+) {}
+unreadCount = 0;
+currentUserId = localStorage.getItem('adminId') || 'admin';
 
   ngOnInit(): void {
     const role = localStorage.getItem("userRole");
@@ -26,6 +36,14 @@ export class AdminPanel implements OnInit, AfterViewInit {
     this.fetchDashboardStats();
     this.fetchTodaysAppointments();
     setTimeout(() => this.renderCharts(), 500);
+    this.socketService.joinChat(this.currentUserId);
+
+// Listen for incoming messages (from patients)
+this.socketService.onMessage().subscribe((msg) => {
+  if (msg.receiverId === this.currentUserId) {
+    this.unreadCount++;
+  }
+});
   }
 
   ngAfterViewInit(): void {
