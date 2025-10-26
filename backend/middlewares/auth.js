@@ -68,35 +68,42 @@ function authorizeAdmin(req, res, next) {
 // Socket.IO middleware
 async function verifySocketToken(socket, next) {
   try {
-    console.log('\n🟢 [Socket] Incoming connection attempt...');
+    console.log('\n🟢 [Socket] Connection attempt...');
     const token = socket.handshake.auth?.token;
-    console.log('🔐 [Socket] Token received from client:', token ? token.slice(0, 25) + '...' : '❌ None');
 
     if (!token) {
-      console.log('🚫 [Socket] No token provided');
+      console.warn('🚫 [Socket] No token provided');
       return next(new Error('Access token required for socket'));
     }
 
+    // Decode JWT
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'secret-123');
-    console.log('📦 [Socket] Decoded JWT payload:', payload);
+    console.log('📦 [Socket] Token payload:', payload);
 
-    // 🧠 Check what’s inside payload
-    if (!payload.email) {
-      console.log('🚫 [Socket] No email found in JWT payload');
-      return next(new Error('Invalid token payload: no email'));
+    let user = null;
+
+    // Try finding the user in all relevant collections
+    if (payload.role === 'doctor') {
+      user = await Doctor.findOne({ email: payload.email });
+    } else {
+      user = await User.findOne({ email: payload.email });
     }
-
-    // 🧩 Try finding user by email
-    const user = await User.findOne({ email: payload.email });
-    console.log('🔍 [Socket] DB lookup for email:', payload.email);
-    console.log('📊 [Socket] DB result:', user ? `✅ Found (${user.role})` : '❌ Not found');
 
     if (!user) {
-      return next(new Error('User not found'));
+      console.warn(`⚠️ [Socket] User not found in DB for email: ${payload.email}`);
+      // fallback: attach minimal info so socket still connects
+      socket.user = { email: payload.email, role: payload.role || 'unknown' };
+      return next(); 
     }
 
-    console.log('✅ [Socket] Authenticated user:', user.email, '| Role:', user.role);
-    socket.user = user;
+    socket.user = {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+      name: user.name || 'Unknown',
+    };
+
+    console.log(`✅ [Socket] Authenticated: ${user.email} (${user.role})`);
     next();
 
   } catch (err) {
@@ -104,5 +111,6 @@ async function verifySocketToken(socket, next) {
     next(new Error('Authentication error'));
   }
 }
+
 
 module.exports = { authenticateToken, authorizeAdmin, verifySocketToken };

@@ -8,19 +8,28 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
+  /** 🟢 Helper: attach Authorization header */
   private getAuthHeaders() {
     const token = localStorage.getItem('authToken');
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }),
     };
   }
 
+  /** 🟢 Get all chat list (for admin sidebar) */
+  getAllChats(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/all`, this.getAuthHeaders());
+  }
+
+  /** 🟢 Get messages between admin & patient */
   getMessages(userId: string, contactId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${userId}/${contactId}`, this.getAuthHeaders());
   }
 
+  /** 🟢 Send message */
   sendMessage(senderId: string, receiverId: string, message: string): Observable<any> {
     return this.http.post(
       `${this.baseUrl}/send`,
@@ -28,8 +37,14 @@ export class ChatService {
       this.getAuthHeaders()
     );
   }
-  getAllChats(): Observable<any> {
-  return this.http.get(`${this.baseUrl}/all`);
-}
 
+  /** 🟢 Mark messages as read (reset unread count) */
+  markMessagesAsRead(patientId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/mark-read/${patientId}`, {}, this.getAuthHeaders());
+  }
+
+  /** 🟢 Get chat list (for sorting/unread tracking) */
+  getChatList(userId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/list/${userId}`, this.getAuthHeaders());
+  }
 }

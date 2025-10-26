@@ -34,3 +34,52 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+/**
+ * 📦 Get all chats for a user with last message + unread count
+ */
+exports.getChatList = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const chatList = await Chat.aggregate([
+      {
+        $match: {
+          $or: [{ senderId: userId }, { receiverId: userId }],
+        },
+      },
+      {
+        $group: {
+          _id: {
+            pair: {
+              $cond: [
+                { $gt: ["$senderId", "$receiverId"] },
+                ["$senderId", "$receiverId"],
+                ["$receiverId", "$senderId"],
+              ],
+            },
+          },
+          lastMessage: { $last: "$message" },
+          lastSender: { $last: "$senderId" },
+          lastReceiver: { $last: "$receiverId" },
+          lastUpdated: { $max: "$updatedAt" },
+          unreadCount: {
+            $sum: {
+              $cond: [
+                { $and: [{ $eq: ["$read", false] }, { $eq: ["$receiverId", userId] }] },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+      { $sort: { lastUpdated: -1 } },
+    ]);
+
+    res.json(chatList);
+  } catch (error) {
+    console.error('Error fetching chat list:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};

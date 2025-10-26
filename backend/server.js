@@ -39,6 +39,8 @@ const { verifySocketToken } = require('./middlewares/auth');
 io.use(verifySocketToken);
 
 initSocket(io);
+
+
 app.use(cors({
   origin: ['http://localhost:4200', 'http://localhost:5500', 'http://127.0.0.1:5500'],
   methods: ['GET','POST','PUT','DELETE','PATCH'],

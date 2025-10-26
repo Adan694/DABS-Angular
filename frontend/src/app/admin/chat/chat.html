@@ -12,8 +12,27 @@
         [class.active]="selectedChat?._id === chat._id"
         [class.unread]="chat.unreadCount > 0"
       >
-        <span>{{ chat.name || chat.email }}</span>
+        <div class="chat-entry">
+          <div class="chat-header-row">
+            <div class="chat-name">
+              <span
+                class="status-dot"
+                [class.online]="chat.online"
+                [class.offline]="!chat.online"
+              ></span>
+              {{ chat.name || chat.email }}
+            </div>
+            <div class="chat-time">
+              {{ chat.lastMessageAt ? (chat.lastMessageAt | date : 'shortTime') : '' }}
+            </div>
+          </div>
 
+          <div class="chat-message-preview">
+            {{ chat.lastMessage || 'No messages yet' }}
+          </div>
+        </div>
+
+        <!-- 🔴 Unread Badge -->
         <span *ngIf="chat.unreadCount > 0" class="unread-badge">
           {{ chat.unreadCount }}
         </span>

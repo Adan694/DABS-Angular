@@ -43,4 +43,14 @@ export class SocketService {
       this.socket.on('receive_message', (msg) => observer.next(msg));
     });
   }
+  onUserStatus(): Observable<any> {
+  return new Observable((observer) => {
+    this.socket.on('userStatusUpdate', (status) => {
+      console.log('📩 Status event received:', status);
+      observer.next(status);
+    });
+  });
+}
+
+
 }
