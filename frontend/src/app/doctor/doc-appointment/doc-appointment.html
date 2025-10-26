@@ -1,24 +1,35 @@
 <app-doctor-navbar></app-doctor-navbar>
-<body>
-  <div class="container">
-    <h1 class="page-title">Appointment Management</h1>
 
-    <div class="filter-bar">
-      <input
-        type="text"
-        placeholder="Search by patient name..."
-        [(ngModel)]="searchText"
-        (input)="applyFilter()"
-      />
-    </div>
+<div class="container mt-4">
+  <h1 class="page-title">Appointment Management</h1>
 
-    <!-- Upcoming Appointments -->
-    <div class="section-block">
-      <h2>Upcoming Appointments</h2>
+  <!-- 🔍 Search -->
+  <div class="filter-bar mb-4">
+    <input
+      type="text"
+      placeholder="Search by patient name..."
+      [(ngModel)]="searchText"
+      (input)="applyFilter()"
+    />
+  </div>
+
+  <!-- 🧭 Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item" *ngFor="let tab of tabs">
+      <a class="nav-link" [class.active]="activeTab === tab.key" (click)="setActiveTab(tab.key)">
+        {{ tab.label }}
+      </a>
+    </li>
+  </ul>
+
+  <!-- 📅 Tab Content -->
+  <div class="tab-content">
+    <div *ngIf="activeTab === 'upcoming'">
+      <!-- <h2>Upcoming Appointments</h2> -->
       <table class="appointment-table" *ngIf="upcomingAppointments.length > 0">
         <thead>
           <tr>
-            <th>Patient Name</th>
+            <th>Patient</th>
             <th>Date & Time</th>
             <th>Phone</th>
             <th>Status</th>
@@ -32,9 +43,9 @@
             <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
             <td>{{ appt.status }}</td>
             <td>
-              <button (click)="markCompleted(appt._id)">Complete</button>
-              <button (click)="markMissed(appt._id)">Missed</button>
-              <button (click)="cancelAppointment(appt._id)">Cancel</button>
+              <button (click)="markCompleted(appt._id)">✅ Complete</button>
+              <button (click)="markMissed(appt._id)">⚠️ Missed</button>
+              <button (click)="cancelAppointment(appt._id)">❌ Cancel</button>
             </td>
           </tr>
         </tbody>
@@ -46,13 +57,13 @@
       </div>
     </div>
 
-    <!-- Cancelled Appointments -->
-    <div class="section-block">
-      <h2>Cancelled Appointments</h2>
+    <!-- Cancelled -->
+    <div *ngIf="activeTab === 'cancelled'">
+      <!-- <h2>Cancelled Appointments</h2> -->
       <table class="appointment-table" *ngIf="cancelledAppointments.length > 0">
         <thead>
           <tr>
-            <th>Patient Name</th>
+            <th>Patient</th>
             <th>Date & Time</th>
             <th>Phone</th>
             <th>Status</th>
@@ -65,7 +76,7 @@
             <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
             <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
             <td>{{ appt.status }}</td>
-            <td><button (click)="openRescheduleModal(appt._id)">Reschedule</button></td>
+            <td><button (click)="openRescheduleModal(appt._id)">🔄 Reschedule</button></td>
           </tr>
         </tbody>
       </table>
@@ -76,17 +87,16 @@
       </div>
     </div>
 
-    <!-- Missed Appointments -->
-    <div class="section-block">
-      <h2>Missed Appointments</h2>
+    <!-- Missed -->
+    <div *ngIf="activeTab === 'missed'">
+      <!-- <h2>Missed Appointments</h2> -->
       <table class="appointment-table" *ngIf="missedAppointments.length > 0">
         <thead>
           <tr>
-            <th>Patient Name</th>
+            <th>Patient</th>
             <th>Date & Time</th>
             <th>Phone</th>
             <th>Status</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -95,7 +105,6 @@
             <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
             <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
             <td>{{ appt.status }}</td>
-            <td></td>
           </tr>
         </tbody>
       </table>
@@ -106,17 +115,16 @@
       </div>
     </div>
 
-    <!-- Completed Appointments -->
-    <div class="section-block">
-      <h2>Completed Appointments</h2>
+    <!-- Completed -->
+    <div *ngIf="activeTab === 'completed'">
+      <!-- <h2>Completed Appointments</h2> -->
       <table class="appointment-table" *ngIf="completedAppointments.length > 0">
         <thead>
           <tr>
-            <th>Patient Name</th>
+            <th>Patient</th>
             <th>Date & Time</th>
             <th>Phone</th>
             <th>Status</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -125,7 +133,6 @@
             <td>{{ appt.date | date : 'dd-MM-yyyy' }} {{ appt.time }}</td>
             <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
             <td>{{ appt.status }}</td>
-            <td></td>
           </tr>
         </tbody>
       </table>
@@ -137,7 +144,7 @@
     </div>
   </div>
 
-  <!-- Reschedule Modal -->
+  <!-- Modal -->
   <div class="modal" *ngIf="showRescheduleModal">
     <div class="modal-content">
       <span class="close" (click)="closeModal()">&times;</span>
@@ -148,4 +155,4 @@
       <button (click)="confirmReschedule(slotSelect.value)">Confirm Reschedule</button>
     </div>
   </div>
-</body>
+</div>

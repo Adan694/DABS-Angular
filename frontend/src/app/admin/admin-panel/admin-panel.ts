@@ -68,6 +68,20 @@ this.socketService.onMessage().subscribe((msg) => {
   this.router.navigate(['/login']);
     });
   }
+dropdownOpen = false;
+
+toggleDropdown(e: Event) {
+  e.stopPropagation();
+  this.dropdownOpen = !this.dropdownOpen;
+}
+
+goToPatientChats() {
+  this.router.navigate(['/admin/chat']);
+}
+
+goToDoctorChats() {
+  this.router.navigate(['/admin-doctor-chat']);
+}
 
   fetchDashboardStats() {
     this.adminService.getDashboardStats().subscribe({

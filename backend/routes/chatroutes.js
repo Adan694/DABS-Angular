@@ -10,46 +10,6 @@ router.get('/list/:userId', ChatController.getChatList);
 
 // Send a new message
 router.post('/send', authenticateToken, ChatController.sendMessage);
-// router.get("/all", async (req, res) => {
-//   try {
-//     const patients = await User.find({ role: "patient", isBlocked: false })
-//       .select("_id name email");
-
-//     const chatsWithLastMsg = await Promise.all(
-//       patients.map(async (patient) => {
-//         const lastMessage = await Chat.findOne({
-//           $or: [
-//             { senderId: patient._id },
-//             { receiverId: patient._id }
-//           ]
-//         })
-//           .sort({ createdAt: -1 })
-//           .lean();
-
-//         const unreadCount = await Chat.countDocuments({
-//           senderId: patient._id,
-//           receiverRole: "admin",
-//           read: false
-//         });
-
-//         return {
-//           _id: patient._id,
-//           name: patient.name,
-//           email: patient.email,
-//           lastMessage: lastMessage ? lastMessage.message : null,
-//           lastMessageAt: lastMessage ? lastMessage.createdAt : null,
-//           unreadCount,
-//           isUnread: unreadCount > 0, // ✅ useful for UI color change
-//         };
-//       })
-//     );
-
-//     res.json(chatsWithLastMsg);
-//   } catch (err) {
-//     console.error("Error fetching patient list:", err);
-//     res.status(500).json({ error: "Server error fetching patients" });
-//   }
-// });
 
 router.get("/all", async (req, res) => {
   try {

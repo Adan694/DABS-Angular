@@ -8,6 +8,7 @@ import { PatientsList } from './patient-list/patient-list';
 import { PatientDetail } from './patient-detail/patient-detail';
 import { AdminDocList } from './admin-doc-list/admin-doc-list';
 import { AdminChat } from './chat/chat';
+import { AdminDoctorAppointments } from './doctor-appointments/doctor-appointments';
 export const routes: Routes = [
   { path: '', component: AdminPanel }, 
   { path: 'appointments', component: AdminAppointments },
@@ -16,6 +17,8 @@ export const routes: Routes = [
   { path: 'patient-list', component: PatientsList },
   { path: 'patient-details', component: PatientDetail },
   { path: 'doclist', component: AdminDocList },
-  { path: 'chat', component: AdminChat}
+  { path: 'chat', component: AdminChat },
+  { path: 'doctor-appointments/:doctorId', component: AdminDoctorAppointments },
+
 
 ];

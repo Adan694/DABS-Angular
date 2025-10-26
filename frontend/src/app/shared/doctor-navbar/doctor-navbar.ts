@@ -14,6 +14,9 @@ import { CommonModule } from '@angular/common';
 export class DoctorNavbar {
   menuOpen = false;
   accountDropdownOpen = false;
+  unreadMessagesCount = 0;
+
+  
 
 toggleAccountDropdown() {
   this.accountDropdownOpen = !this.accountDropdownOpen;

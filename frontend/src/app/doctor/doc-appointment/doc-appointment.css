@@ -1,13 +1,15 @@
-body{
-            background-color: #e6f2ff;
+
+.page-title{
+    margin-top: 60px;
 }
 /* Container */
 .container {
     padding: 25px;
-    max-width: 1200px;
+    max-width: 1350px;
     width: 100%;
-    margin: 80px auto 40px auto;
+    /* margin: 80px auto 40px auto; */
     font-family: 'Roboto', sans-serif;
+    background-color: #e6f2ff;
     
 }
 
@@ -37,6 +39,8 @@ body{
     display: flex;
     gap: 15px;
     margin-bottom: 25px;
+    width: 900px;
+    margin-left: 200px;
 }
 
 .filter-bar input {
@@ -53,7 +57,10 @@ body{
     border-color: #009999;
     box-shadow: 0 0 8px rgba(0, 153, 153, 0.3);
 }
-
+.tab-content{
+    max-width: 1200px;
+    margin-left: 50px;
+}
 /* Appointment Table */
 .appointment-table {
     width: 100%;
@@ -272,4 +279,39 @@ body{
         padding: 20px;
         width: 90%;
     }
+}
+
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #ddd;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.nav-tabs .nav-item {
+    margin: 0;
+}
+
+.nav-tabs .nav-link {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px 8px 0 0;
+    background: #f1f1f1;
+    color: #096666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    background: #dff3f3;
+}
+
+.nav-tabs .nav-link.active {
+    background: #096666;
+    color: white;
+    border-bottom: 3px solid #096666;
 }

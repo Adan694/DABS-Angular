@@ -67,6 +67,19 @@ export class DoctorAppointment implements OnInit {
 
     this.fetchAppointments();
   }
+  tabs = [
+  { key: 'upcoming', label: 'Upcoming' },
+  { key: 'cancelled', label: 'Cancelled' },
+  { key: 'missed', label: 'Missed' },
+  { key: 'completed', label: 'Completed' },
+];
+
+activeTab: string = 'upcoming';
+
+setActiveTab(tabKey: string) {
+  this.activeTab = tabKey;
+}
+
 
   get headers() {
     return new HttpHeaders({ Authorization: `Bearer ${this.token}` });

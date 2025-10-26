@@ -1,0 +1,33 @@
+<app-doctor-navbar></app-doctor-navbar>
+<div class="chat-container">
+  <!-- Chat Header -->
+  <div class="chat-header">💬 Chat with Admin</div>
+
+  <!-- Chat Messages -->
+  <div class="chat-messages">
+    <div
+      *ngFor="let msg of messages"
+      class="message"
+      [class.sent]="msg.senderId === currentUserId"
+      [class.received]="msg.senderId !== currentUserId"
+    >
+      <div class="sender-label">
+        {{ msg.senderId === currentUserId ? 'You' : 'Admin' }}
+      </div>
+      <div class="message-text">
+        {{ msg.message }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Input -->
+  <div class="chat-input">
+    <input
+      type="text"
+      [(ngModel)]="newMessage"
+      placeholder="Type your message..."
+      (keyup.enter)="sendMessage()"
+    />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>

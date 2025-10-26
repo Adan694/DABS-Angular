@@ -1,8 +1,18 @@
 <div class="admin-chat-container">
-  <!-- 🟩 LEFT SIDEBAR -->
+  <!-- SIDEBAR -->
   <div class="chat-sidebar">
     <button class="dashboard-btn" (click)="goToDashboard()">Back to Dashboard</button>
-    <h3>💬 Patients</h3>
+
+    <div class="chat-type-switch">
+      <button [class.active]="chatType === 'patients'" (click)="switchChatType('patients')">
+        Patients
+      </button>
+      <button [class.active]="chatType === 'doctors'" (click)="switchChatType('doctors')">
+        Doctors
+      </button>
+    </div>
+
+    <h3>💬 {{ chatType === 'patients' ? 'Patients' : 'Doctors' }}</h3>
 
     <ul>
       <li
@@ -26,24 +36,20 @@
               {{ chat.lastMessageAt ? (chat.lastMessageAt | date : 'shortTime') : '' }}
             </div>
           </div>
-
-          <div class="chat-message-preview">
-            {{ chat.lastMessage || 'No messages yet' }}
-          </div>
+          <div class="chat-message-preview">{{ chat.lastMessage || 'No messages yet' }}</div>
         </div>
-
-        <!-- 🔴 Unread Badge -->
-        <span *ngIf="chat.unreadCount > 0" class="unread-badge">
-          {{ chat.unreadCount }}
-        </span>
+        <span *ngIf="chat.unreadCount > 0" class="unread-badge">{{ chat.unreadCount }}</span>
       </li>
     </ul>
   </div>
 
-  <!-- ✅ RIGHT CHAT WINDOW -->
+  <!-- CHAT WINDOW -->
   <div class="chat-window" *ngIf="selectedChat; else noChat">
     <div class="chat-header">
-      <h4>Chat with {{ selectedChat.name || selectedChat.email }}</h4>
+      <h4>
+        Chat with {{ chatType === 'doctors' ? 'Dr. ' : ''
+        }}{{ selectedChat.name || selectedChat.email }}
+      </h4>
     </div>
 
     <div class="chat-messages">
@@ -68,12 +74,13 @@
     </div>
   </div>
 
-  <!-- 🧩 Empty State -->
   <ng-template #noChat>
-    <div class="no-chat">Select a patient to start chatting.</div>
+    <div class="no-chat">
+      Select a {{ chatType === 'patients' ? 'patient' : 'doctor' }} to start chatting.
+    </div>
   </ng-template>
 
-  <!-- 📜 Context Menu (placed outside sidebar so it’s not clipped) -->
+  <!-- Context menu (unchanged) -->
   <div
     *ngIf="contextMenuVisible"
     class="context-menu"

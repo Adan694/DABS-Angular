@@ -6,9 +6,8 @@ import { Observable } from 'rxjs';
 export class ChatService {
   private baseUrl = 'http://localhost:3000/api/chats';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  /** 🟢 Helper: attach Authorization header */
   private getAuthHeaders() {
     const token = localStorage.getItem('authToken');
     return {
@@ -19,17 +18,14 @@ export class ChatService {
     };
   }
 
-  /** 🟢 Get all chat list (for admin sidebar) */
   getAllChats(): Observable<any> {
     return this.http.get(`${this.baseUrl}/all`, this.getAuthHeaders());
   }
 
-  /** 🟢 Get messages between admin & patient */
   getMessages(userId: string, contactId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/${userId}/${contactId}`, this.getAuthHeaders());
   }
 
-  /** 🟢 Send message */
   sendMessage(senderId: string, receiverId: string, message: string): Observable<any> {
     return this.http.post(
       `${this.baseUrl}/send`,
@@ -38,13 +34,42 @@ export class ChatService {
     );
   }
 
-  /** 🟢 Mark messages as read (reset unread count) */
   markMessagesAsRead(patientId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/mark-read/${patientId}`, {}, this.getAuthHeaders());
   }
 
-  /** 🟢 Get chat list (for sorting/unread tracking) */
   getChatList(userId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/list/${userId}`, this.getAuthHeaders());
   }
+  getAllDoctorChats(): Observable<any> {
+    return this.http.get('http://localhost:3000/api/doctor-chats/alldoctors', this.getAuthHeaders());
+  }
+
+
+  getDoctorMessages(userId: string, contactId: string) {
+    return this.http.get(
+      `http://localhost:3000/api/doctor-chats/${userId}/${contactId}`,
+      this.getAuthHeaders()
+    );
+  }
+
+  sendDoctorMessage(senderId: string, receiverId: string, message: string) {
+    return this.http.post(
+      'http://localhost:3000/api/doctor-chats/send',
+      { senderId, receiverId, message },
+      this.getAuthHeaders()
+    );
+  }
+
+
+  markDoctorMessagesAsRead(doctorId: string) {
+    return this.http.post(`http://localhost:3000/api/doctor-chats/mark-read/${doctorId}`, {});
+  }
+
+
+  markAsRead(contactId: string, baseUrl: string) {
+    return this.http.post(`${baseUrl}${contactId}`, {});
+  }
+
+
 }

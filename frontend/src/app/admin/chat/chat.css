@@ -291,3 +291,32 @@
   white-space: nowrap;
   margin-top: 3px;
 }
+/* 🟢 Chat type switch buttons (Patients | Doctors) */
+.chat-type-switch {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.chat-type-switch button {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.chat-type-switch button.active {
+    background: #0d4e4c;
+    color: #fff;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+.chat-type-switch button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}

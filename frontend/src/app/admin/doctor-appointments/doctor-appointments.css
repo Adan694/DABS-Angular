@@ -1,0 +1,196 @@
+/* Reset and Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e6f2ff;
+    color: #333;
+}
+
+/* Content Wrapper */
+.content {
+    padding: 20px;
+    background-color: #e6f2ff;
+    border-radius: 12px;
+}
+
+/* Header */
+.header {
+    padding: 16px 24px;
+    background-color: #096666;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(9, 102, 102, 0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Logout Button */
+.logout-button {
+    background-color: #f44336;
+    color: #fff;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(244, 67, 54, 0.35);
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(244, 67, 54, 0.5);
+}
+
+/* Appointment List */
+#appointmentsList {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Appointment Card */
+.appointment-card {
+    background: #fff;
+    border: 1px solid #e0e6ed;
+    border-left: 5px solid #096666;
+    border-radius: 10px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 1100px;
+    margin-left: 150px;
+}
+
+.appointment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header */
+.appointment-card .header {
+    background: none;
+    box-shadow: none;
+    color: #096666;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+/* Status */
+.status {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: capitalize;
+}
+
+.status.pending {
+    color: #b37400;
+    background-color: #fff5e6;
+    border: 1px solid #ffd699;
+}
+
+.status.confirmed {
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    border: 1px solid #a5d6a7;
+}
+
+.status.cancelled {
+    color: #c62828;
+    background-color: #ffebee;
+    border: 1px solid #ef9a9a;
+}
+
+/* Card Body */
+.appointment-card .body p {
+    margin: 6px 0;
+    font-size: 0.95rem;
+}
+
+.appointment-card .body strong {
+    color: #096666;
+}
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 35px 0 15px;
+    gap: 20px;
+}
+
+.pagination button {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+.pagination button:disabled {
+    background: #eaeaea;
+    color: #888;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.pagination .prev-btn {
+    background: #4da6ff;
+    color: white;
+}
+
+.pagination .prev-btn:hover {
+    background: #007bff;
+    box-shadow: 0 6px 14px rgba(77, 166, 255, 0.4);
+}
+
+.pagination .next-btn {
+    background: #009688;
+    color: white;
+}
+
+.pagination .next-btn:hover {
+    background: #00796b;
+    box-shadow: 0 6px 14px rgba(0, 150, 136, 0.4);
+}
+
+/* Back Button */
+.back-btn {
+    background-color: #009688;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 150, 136, 0.4);
+}
+
+.back-btn:hover {
+    background-color: #00796b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 150, 136, 0.5);
+}
