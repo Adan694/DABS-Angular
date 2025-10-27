@@ -49,6 +49,10 @@ export class DoctorAppointment implements OnInit {
   currentPageCancelled = 1;
   currentPageMissed = 1;
   currentPageCompleted = 1;
+// Confirmation Modal
+showConfirmModal = false;
+confirmAction: (() => void) | null = null;
+confirmMessage = '';
 
   showRescheduleModal = false;
   selectedAppointmentId: string = '';
@@ -190,4 +194,32 @@ setActiveTab(tabKey: string) {
   closeModal() {
     this.showRescheduleModal = false;
   }
+  openConfirmModal(message: string, action: () => void) {
+  this.confirmMessage = message;
+  this.confirmAction = action;
+  this.showConfirmModal = true;
+}
+
+confirmYes() {
+  if (this.confirmAction) this.confirmAction();
+  this.closeConfirmModal();
+}
+
+closeConfirmModal() {
+  this.showConfirmModal = false;
+  this.confirmAction = null;
+  this.confirmMessage = '';
+}
+confirmMarkCompleted(id: string) {
+  this.openConfirmModal('Mark this appointment as Completed?', () => this.markCompleted(id));
+}
+
+confirmMarkMissed(id: string) {
+  this.openConfirmModal('Mark this appointment as Missed?', () => this.markMissed(id));
+}
+
+confirmCancelAppointment(id: string) {
+  this.openConfirmModal('Are you sure you want to Cancel this appointment?', () => this.cancelAppointment(id));
+}
+
 }

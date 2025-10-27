@@ -3,7 +3,7 @@
 <div class="container mt-4">
   <h1 class="page-title">Appointment Management</h1>
 
-  <!-- 🔍 Search -->
+  <!-- Search -->
   <div class="filter-bar mb-4">
     <input
       type="text"
@@ -13,7 +13,7 @@
     />
   </div>
 
-  <!-- 🧭 Tabs -->
+  <!--  Tabs -->
   <ul class="nav nav-tabs mb-4">
     <li class="nav-item" *ngFor="let tab of tabs">
       <a class="nav-link" [class.active]="activeTab === tab.key" (click)="setActiveTab(tab.key)">
@@ -43,9 +43,9 @@
             <td>{{ appt.phone || appt.patientId?.phone || 'N/A' }}</td>
             <td>{{ appt.status }}</td>
             <td>
-              <button (click)="markCompleted(appt._id)">✅ Complete</button>
-              <button (click)="markMissed(appt._id)">⚠️ Missed</button>
-              <button (click)="cancelAppointment(appt._id)">❌ Cancel</button>
+              <button (click)="confirmMarkCompleted(appt._id)">✅ Complete</button>
+              <button (click)="confirmMarkMissed(appt._id)">⚠️ Missed</button>
+              <button (click)="confirmCancelAppointment(appt._id)">❌ Cancel</button>
             </td>
           </tr>
         </tbody>
@@ -153,6 +153,19 @@
         <option *ngFor="let slot of availableSlots" [value]="slot">{{ slot }}</option>
       </select>
       <button (click)="confirmReschedule(slotSelect.value)">Confirm Reschedule</button>
+    </div>
+  </div>
+  <!-- ✅ Confirmation Modal -->
+  <div class="modal" *ngIf="showConfirmModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeConfirmModal()">&times;</span>
+      <h3>Confirmation</h3>
+      <p>{{ confirmMessage }}</p>
+
+      <div style="display: flex; gap: 12px; margin-top: 20px">
+        <button style="background-color: #007777" (click)="confirmYes()">Yes</button>
+        <button style="background-color: #999" (click)="closeConfirmModal()">No</button>
+      </div>
     </div>
   </div>
 </div>

@@ -18,8 +18,8 @@ import { Footer } from '../../shared/footer/footer';
 export class Chat implements OnInit {
   messages: any[] = [];
   newMessage = '';
-  currentUserId = localStorage.getItem('patientId') || ''; // patient
-  adminId = 'admin'; // or store admin _id in DB later
+  currentUserId = localStorage.getItem('patientId') || ''; 
+  adminId = 'admin'; 
 
   constructor(private chatService: ChatService, private socketService: SocketService, private router: Router) {}
 

@@ -22,7 +22,7 @@ export class AdminChat implements OnInit {
   newMessage = '';
   currentUserId = localStorage.getItem('adminId') || 'admin';
 
-  // 🟢 NEW: Track which chat mode we’re in
+  //  Track which chat mode we’re in
   chatType: 'patients' | 'doctors' = 'patients';
 
   constructor(
@@ -36,7 +36,7 @@ export class AdminChat implements OnInit {
     this.loadChats().then(() => {
       this.socketService.joinChat(this.currentUserId);
 
-      // 🟢 Listen for incoming messages
+      //  Listen for incoming messages
       this.socketService.onMessage().subscribe((msg) => {
         const chat = this.chats.find(c => c._id === msg.senderId);
 
@@ -63,7 +63,7 @@ export class AdminChat implements OnInit {
         }
       });
 
-      // 🟢 Listen for online/offline updates
+      //  Listen for online/offline updates
       this.socketService.onUserStatus().subscribe((status) => {
         const user = this.chats.find(c => c.email?.toLowerCase() === status.email?.toLowerCase());
         if (user) user.online = status.online;
@@ -71,7 +71,7 @@ export class AdminChat implements OnInit {
     });
   }
 
-  // 🟢 Toggle between Patients/Doctors
+  //  Toggle between Patients/Doctors
   switchChatType(type: 'patients' | 'doctors') {
     this.chatType = type;
     this.selectedChat = null;
@@ -152,7 +152,7 @@ export class AdminChat implements OnInit {
     });
   }
 
-  // Context Menu (unchanged)
+  // Context Menu 
   contextMenuVisible = false;
   menuX = 0;
   menuY = 0;

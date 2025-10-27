@@ -28,9 +28,7 @@ export class DoctorChat implements OnInit {
     }
 
     // join socket room
-  this.socketService.openChatWith('admin');
-
-    // load previous messages
+    this.socketService.openChatWith('admin');
     this.loadMessages();
 
     // listen for new ones

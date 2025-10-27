@@ -2,27 +2,26 @@ const { User } = require('../models/users');
 const Chat = require('../models/chat');
 const Message = require('../models/message');
 
-// 🟢 Track all online users globally (email → socket.id)
 const onlineUsers = new Map();
 
 function initSocket(io) {
   io.on('connection', (socket) => {
-    const user = socket.user; // 👈 Already set by verifySocketToken middleware
+    const user = socket.user; 
     if (!user?.email) {
       console.warn('⚠️ Socket connected without valid user data');
       return;
     }
 
-    console.log(`🟢 [Socket] ${user.email} connected`);
+    console.log(` [Socket] ${user.email} connected`);
 
     // Track online users
     onlineUsers.set(user.email, socket.id);
 
-    // ✅ Notify everyone this user is online
+    //  Notify everyone this user is online
     io.emit('userStatusUpdate', { email: user.email, online: true });
-    console.log('📢 Emitting userStatusUpdate:', { email: user.email, online: true });
+    console.log(' Emitting userStatusUpdate:', { email: user.email, online: true });
 
-    // --- 🔹 Handle "openChatWith" ---
+    // Handle "openChatWith" ---
     socket.on('openChatWith', async ({ otherUserId }) => {
       try {
         let chat = await Chat.findOne({
@@ -34,11 +33,11 @@ function initSocket(io) {
         socket.join(chat._id.toString());
         socket.emit('chatOpened', chat);
       } catch (error) {
-        console.error('❌ Error opening chat:', error);
+        console.error(' Error opening chat:', error);
       }
     });
 
-    // --- 🔹 Handle "sendMessage" ---
+    // ---  Handle "sendMessage" ---
     socket.on('sendMessage', async ({ chatId, content }) => {
       try {
         const message = await Message.create({
@@ -60,16 +59,16 @@ function initSocket(io) {
           createdAt: message.createdAt,
         });
       } catch (error) {
-        console.error('❌ Error sending message:', error);
+        console.error(' Error sending message:', error);
       }
     });
 
-    // --- 🔻 Handle disconnect ---
+    // --Handle disconnect ---
     socket.on('disconnect', () => {
-      console.log(`🔴 [Socket] ${user.email} disconnected`);
+      console.log(` [Socket] ${user.email} disconnected`);
       onlineUsers.delete(user.email);
       io.emit('userStatusUpdate', { email: user.email, online: false });
-      console.log('📢 Emitting userStatusUpdate:', { email: user.email, online: false });
+      console.log(' Emitting userStatusUpdate:', { email: user.email, online: false });
     });
   });
 }

@@ -315,3 +315,8 @@
     color: white;
     border-bottom: 3px solid #096666;
 }
+.modal-content p {
+    font-size: 15px;
+    color: #333;
+    margin-top: 10px;
+}
