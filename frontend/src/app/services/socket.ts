@@ -11,15 +11,14 @@ export class SocketService {
 
   const storedUser = localStorage.getItem('user');
   let email = null;
-  let role = null;
-
+let role = 'admin';
   if (storedUser) {
     const parsedUser = JSON.parse(storedUser);
     email = parsedUser.email;
     role = parsedUser.role;
   }
 
-  console.log('🧠 Socket auth data:', { token, role, email });
+  console.log(' Socket auth data:', { token, role, email });
 
   this.socket = io(this.serverUrl, {
     transports: ['websocket'],
@@ -30,14 +29,13 @@ export class SocketService {
   });
 
   this.socket.on('connect', () => {
-    console.log('✅ Socket connected with ID:', this.socket.id);
+    console.log(' Socket connected with ID:', this.socket.id);
   });
 
   this.socket.on('connect_error', (err) => {
-    console.error('❌ Socket connection error:', err.message);
+    console.error(' Socket connection error:', err.message);
   });
 }
-
 
   joinChat(userId: string) {
     this.socket.emit('join', userId);
@@ -60,10 +58,16 @@ export class SocketService {
   onUserStatus(): Observable<any> {
     return new Observable((observer) => {
       this.socket.on('userStatusUpdate', (status) => {
-        console.log('📩 Status event received:', status);
+        console.log(' Status event received:', status);
         observer.next(status);
       });
     });
   }
-  
+  disconnect() {
+  if (this.socket && this.socket.connected) {
+    console.log('🔌 Disconnecting socket...');
+    this.socket.disconnect();
+  }
+}
+
 }

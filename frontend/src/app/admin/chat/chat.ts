@@ -35,11 +35,11 @@ currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
     this.loadChats().then(() => {
  setTimeout(() => {
       this.socketService.joinChat(this.currentUserId);
-      console.log("✅ Joined admin room:", this.currentUserId);
+      console.log(" Joined admin room:", this.currentUserId);
     }, 500);
       //  Listen for incoming messages
       this.socketService.onMessage().subscribe((msg) => {
-              console.log("📩 Admin received via socket:", msg);
+              console.log("Admin received via socket:", msg);
 
         const chat = this.chats.find(c => c._id === msg.senderId);
 
@@ -65,28 +65,17 @@ currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
           this.chats = [chat, ...this.chats.filter(c => c._id !== chat._id)];
         }
       });
+this.socketService.onUserStatus().subscribe((status) => {
+  console.log(' Received userStatusUpdate:', status);
 
-      // this.socketService.onUserStatus().subscribe((status) => {
-      //     console.log('📩 Received userStatusUpdate:', status);
-
-      //   const user = this.chats.find(c => c.email?.toLowerCase() === status.email?.toLowerCase());
-      //   if (user) user.online = status.online;
-      //       console.log(`✅ Updated ${user.name || user.email} online = ${user.online}`);
-
-      // });
-      this.socketService.onUserStatus().subscribe((status) => {
-  console.log('📩 Received userStatusUpdate:', status);
-
-  // Match by userId instead of email
   const user = this.chats.find(c => c._id === status.userId);
   if (user) {
     user.online = status.online;
-    console.log(`✅ Updated ${user.name || user.email} online = ${user.online}`);
+    console.log(` Updated ${user.name || user.email} online = ${user.online}`);
   } else {
-    console.warn('⚠️ Status update received for unknown user', status);
+    console.warn(' Status update received for unknown user', status);
   }
 });
-
     });
   }
 
@@ -113,7 +102,7 @@ currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
             unreadCount: c.unreadCount ?? 0,
             online: false,
           }));
-                  console.log("✅ Processed chats:", this.chats);
+                  console.log(" Processed chats:", this.chats);
 
           resolve();
         },

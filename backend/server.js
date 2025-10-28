@@ -19,6 +19,8 @@ const bookingRoutes = require('./routes/bookingroutes');
 const contactRoutes = require('./routes/contact');
 const { initSocket } = require('./controllers/socketcontroller');
 const doctorChatRoutes = require('./routes/doctorchat'); 
+const chatRoutes = require('./routes/chatroutes');
+
 const session = require('express-session');
 
 const app = express();

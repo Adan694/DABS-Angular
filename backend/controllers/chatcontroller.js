@@ -14,6 +14,15 @@ exports.sendMessage = async (req, res) => {
     const io = getIo(); 
  io.to(senderId).emit('newMessage', chat);
     io.to(receiverId).emit('newMessage', chat);
+// const emitEvent = 'receive_message';
+
+// // Emit to sender and receiver, avoid double sending if they are same
+// if (senderId === receiverId) {
+//   io.to(senderId).emit(emitEvent, chat);
+// } else {
+//   io.to(senderId).emit(emitEvent, chat);
+//   io.to(receiverId).emit(emitEvent, chat);
+// }
 
     res.status(201).json({ message: 'Message sent successfully', chat });
   } catch (error) {

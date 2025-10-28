@@ -26,7 +26,6 @@ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
       slots: [String]
     },
   ],
-    online: { type: Boolean, default: false },
 
 }, { timestamps: true }); 
 

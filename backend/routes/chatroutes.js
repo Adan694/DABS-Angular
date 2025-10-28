@@ -80,11 +80,31 @@ router.post("/mark-read/:patientId", async (req, res) => {
   }
 });
 
+router.delete('/clear/:chatId', async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const result = await Chat.deleteMany({
+      $or: [
+        { senderId: '689f5be6e5432f608d4b3a54', receiverId: chatId },
+        { senderId: chatId, receiverId: '689f5be6e5432f608d4b3a54' },
+      ],
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'No messages found to clear' });
+    }
+
+    res.json({ message: 'Chat messages cleared', deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error('❌ Error clearing chat:', err);
+    res.status(500).json({ message: 'Server error clearing chat' });
+  }
+});
+
 router.delete('/:chatId', async (req, res) => {
   try {
     const { chatId } = req.params;
 
-    // Delete all messages where admin was involved with this user
     const result = await Chat.deleteMany({
       $or: [
         { senderId: 'admin', receiverId: chatId },
@@ -100,29 +120,6 @@ router.delete('/:chatId', async (req, res) => {
   } catch (err) {
     console.error('❌ Error deleting chat:', err);
     res.status(500).json({ message: 'Server error deleting chat' });
-  }
-});
-
-router.delete('/clear/:chatId', async (req, res) => {
-  try {
-    const { chatId } = req.params;
-
-    // Delete all messages exchanged between admin and this user
-    const result = await Chat.deleteMany({
-      $or: [
-        { senderId: 'admin', receiverId: chatId },
-        { senderId: chatId, receiverId: 'admin' },
-      ],
-    });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'No messages found to clear' });
-    }
-
-    res.json({ message: 'Chat messages cleared', deletedCount: result.deletedCount });
-  } catch (err) {
-    console.error('❌ Error clearing chat:', err);
-    res.status(500).json({ message: 'Server error clearing chat' });
   }
 });
 

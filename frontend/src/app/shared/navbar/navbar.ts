@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { SocketService } from '../../services/socket';
 
 @Component({
   selector: 'app-navbar',
@@ -14,7 +15,10 @@ export class Navbar implements OnInit {
   dropdownActive = false;
   isLoggedIn = false;
 
-  constructor(private router: Router) {}
+constructor(
+  private router: Router,
+  private socketService: SocketService  
+) {}
 
   ngOnInit() {
     this.checkLoginStatus();
@@ -45,6 +49,8 @@ export class Navbar implements OnInit {
   }
 
   logout(): void {
+    this.socketService.disconnect();
+
     localStorage.clear();
     this.isLoggedIn = false;
     this.closeMenu();
