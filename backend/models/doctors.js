@@ -24,8 +24,10 @@ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
     {
       date: String,
       slots: [String]
-    }
-  ]
+    },
+  ],
+    online: { type: Boolean, default: false },
+
 }, { timestamps: true }); 
 
 doctorSchema.pre('save', function (next) {

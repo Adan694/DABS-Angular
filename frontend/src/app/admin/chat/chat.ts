@@ -20,9 +20,8 @@ export class AdminChat implements OnInit {
   selectedChat: any = null;
   messages: any[] = [];
   newMessage = '';
-  currentUserId = localStorage.getItem('adminId') || 'admin';
+currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
 
-  //  Track which chat mode we’re in
   chatType: 'patients' | 'doctors' = 'patients';
 
   constructor(
@@ -34,10 +33,14 @@ export class AdminChat implements OnInit {
 
   ngOnInit() {
     this.loadChats().then(() => {
+ setTimeout(() => {
       this.socketService.joinChat(this.currentUserId);
-
+      console.log("✅ Joined admin room:", this.currentUserId);
+    }, 500);
       //  Listen for incoming messages
       this.socketService.onMessage().subscribe((msg) => {
+              console.log("📩 Admin received via socket:", msg);
+
         const chat = this.chats.find(c => c._id === msg.senderId);
 
         if (this.selectedChat && msg.senderId === this.selectedChat._id) {
@@ -63,15 +66,30 @@ export class AdminChat implements OnInit {
         }
       });
 
-      //  Listen for online/offline updates
+      // this.socketService.onUserStatus().subscribe((status) => {
+      //     console.log('📩 Received userStatusUpdate:', status);
+
+      //   const user = this.chats.find(c => c.email?.toLowerCase() === status.email?.toLowerCase());
+      //   if (user) user.online = status.online;
+      //       console.log(`✅ Updated ${user.name || user.email} online = ${user.online}`);
+
+      // });
       this.socketService.onUserStatus().subscribe((status) => {
-        const user = this.chats.find(c => c.email?.toLowerCase() === status.email?.toLowerCase());
-        if (user) user.online = status.online;
-      });
+  console.log('📩 Received userStatusUpdate:', status);
+
+  // Match by userId instead of email
+  const user = this.chats.find(c => c._id === status.userId);
+  if (user) {
+    user.online = status.online;
+    console.log(`✅ Updated ${user.name || user.email} online = ${user.online}`);
+  } else {
+    console.warn('⚠️ Status update received for unknown user', status);
+  }
+});
+
     });
   }
 
-  //  Toggle between Patients/Doctors
   switchChatType(type: 'patients' | 'doctors') {
     this.chatType = type;
     this.selectedChat = null;
@@ -88,12 +106,15 @@ export class AdminChat implements OnInit {
 
       apiCall.subscribe({
         next: (res) => {
+          
             console.log("Loaded chats:", res);
           this.chats = (res || []).map((c: any) => ({
             ...c,
             unreadCount: c.unreadCount ?? 0,
             online: false,
           }));
+                  console.log("✅ Processed chats:", this.chats);
+
           resolve();
         },
         error: (err) => {
@@ -152,7 +173,6 @@ export class AdminChat implements OnInit {
     });
   }
 
-  // Context Menu 
   contextMenuVisible = false;
   menuX = 0;
   menuY = 0;

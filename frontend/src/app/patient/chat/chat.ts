@@ -19,7 +19,7 @@ export class Chat implements OnInit {
   messages: any[] = [];
   newMessage = '';
   currentUserId = localStorage.getItem('patientId') || ''; 
-  adminId = 'admin'; 
+  adminId = '689f5be6e5432f608d4b3a54'; 
 
   constructor(private chatService: ChatService, private socketService: SocketService, private router: Router) {}
 

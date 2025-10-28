@@ -13,8 +13,11 @@ router.post('/send', authenticateToken, ChatController.sendMessage);
 
 router.get("/all", async (req, res) => {
   try {
-    const patients = await User.find({ role: "patient", isBlocked: false })
+    // const patients = await User.find({ role: "patient", isBlocked: false })
+          const patients = await User.find({ role: "patient"})
+
       .select("_id name email");
+    console.log("🧠 Total patients found:", patients.length);
 
     const chatsWithLastMsg = await Promise.all(
       patients.map(async (patient) => {
@@ -26,7 +29,9 @@ router.get("/all", async (req, res) => {
         })
           .sort({ createdAt: -1 })
           .lean();
-
+  if (!lastMessage) {
+          console.log("⚠️ No chat found for:", patient.name, patient._id);
+        }
         const unreadCount = await Chat.countDocuments({
           senderId: patient._id,
           receiverRole: "admin",
@@ -44,6 +49,7 @@ router.get("/all", async (req, res) => {
         };
       })
     );
+    console.log("✅ Total chats with last message:", chatsWithLastMsg.length);
 
     // 🟢 Sort chats so the latest (or unread) are at the top
     chatsWithLastMsg.sort((a, b) => {

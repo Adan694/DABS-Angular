@@ -21,78 +21,64 @@ export class Login {
 
   // LOGIN
   async onLogin() {
-    this.errors = {};
+  this.errors = {};
 
-    // Basic frontend validation
-    if (!this.validateEmail(this.loginData.email)) {
-      this.errors.email = 'Invalid email';
-      return;
-    }
-    if (this.loginData.password.length < 6) {
-      this.errors.password = 'Password must be at least 6 characters';
-      return;
-    }
-    if (!this.loginData.role) {
-      // Default to 'patient' if role not selected
-      this.loginData.role = 'patient';
-    }
-
-    try {
-      console.log('Sending login data:', this.loginData); // Debug payload
-      const res = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.loginData)
-      });
-
-      const data = await res.json();
-      console.log('Backend response:', data);
-
-      if (res.status !== 200) {
-        alert(data.error || 'Login failed');
-        return;
-      }
-
-//       localStorage.setItem('authToken', data.token);
-//       localStorage.setItem('userRole', data.role);
-//   // ✅ Save patientId safely (depending on backend response structure)
-// const patientId = data.patientId || data.user?._id || data.userId || data.id;
-// if (patientId) {
-//   localStorage.setItem('patientId', patientId);
-//   console.log('✅ Saved patientId:', patientId);
-// } else {
-//   console.warn('⚠️ No patientId found in backend response:', data);
-// }
-
-//       // Role-based navigation
-//       if (data.role === 'admin') this.router.navigate(['/admin']);
-//       else if (data.role === 'doctor') this.router.navigate(['/doctor']);
-//       else this.router.navigate(['/patient']);
-
- localStorage.setItem('authToken', data.token);
-localStorage.setItem('userRole', data.role);
-
-// Save doctorId if the user is a doctor
-if (data.role === 'doctor' && data.doctor?._id) {
-  localStorage.setItem('doctorId', data.doctor._id);
-  console.log('✅ Saved doctorId:', data.doctor._id);
-}
-
-// Optional: patientId for patients
-if (data.role === 'patient' && data.patientId) {
-  localStorage.setItem('patientId', data.patientId);
-}
-
-// Role-based navigation
-if (data.role === 'admin') this.router.navigate(['/admin']);
-else if (data.role === 'doctor') this.router.navigate(['/doctor']);
-else this.router.navigate(['/patient']);
-
-    } catch (err) {
-      console.error(err);
-      alert('Login failed. Please check your backend and network.');
-    }
+  // Basic frontend validation
+  if (!this.validateEmail(this.loginData.email)) {
+    this.errors.email = 'Invalid email';
+    return;
   }
+  if (this.loginData.password.length < 6) {
+    this.errors.password = 'Password must be at least 6 characters';
+    return;
+  }
+  if (!this.loginData.role) {
+    this.loginData.role = 'patient';
+  }
+
+  try {
+    console.log('Sending login data:', this.loginData);
+
+    const res = await fetch('http://localhost:3000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.loginData)
+    });
+
+    const data = await res.json();
+    console.log('Backend response:', data);
+
+    if (res.status !== 200) {
+      alert(data.error || data.message || 'Login failed');
+      return;
+    }
+
+    // ✅ Store everything in localStorage
+    localStorage.setItem('authToken', data.token);
+    localStorage.setItem('userRole', data.role);
+    localStorage.setItem('user', JSON.stringify(data.user)); // 👈 save complete user details
+
+    // ✅ Optionally, also store ID separately for quick access
+    if (data.user?._id) {
+      if (data.role === 'doctor') {
+        localStorage.setItem('doctorId', data.user._id);
+      } else if (data.role === 'patient') {
+        localStorage.setItem('patientId', data.user._id);
+      }
+    }
+
+    console.log('✅ Saved user in localStorage:', data.user);
+
+    // ✅ Role-based redirection
+    if (data.role === 'admin') this.router.navigate(['/admin']);
+    else if (data.role === 'doctor') this.router.navigate(['/doctor']);
+    else this.router.navigate(['/patient']);
+
+  } catch (err) {
+    console.error(err);
+    alert('Login failed. Please check your backend and network.');
+  }
+}
 
   // SIGNUP
   async onSignup() {

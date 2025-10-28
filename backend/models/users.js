@@ -31,6 +31,8 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   otp: { type: Number },
   otpExpiration: { type: Date },
+    online: { type: Boolean, default: false },
+
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

@@ -1,4 +1,6 @@
 const Chat = require('../models/chat');
+const { io } = require('../server'); // 👈 import Socket.IO instance
+const { getIo } = require('./socketcontroller');
 
 exports.sendMessage = async (req, res) => {
   try {
@@ -9,6 +11,9 @@ exports.sendMessage = async (req, res) => {
 
     const chat = new Chat({ senderId, receiverId, message });
     await chat.save();
+    const io = getIo(); 
+ io.to(senderId).emit('newMessage', chat);
+    io.to(receiverId).emit('newMessage', chat);
 
     res.status(201).json({ message: 'Message sent successfully', chat });
   } catch (error) {

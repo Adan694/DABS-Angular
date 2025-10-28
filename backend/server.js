@@ -25,20 +25,27 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 require('dotenv').config();  
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: {
+//     origin: ['http://localhost:4200', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+//     methods: ['GET', 'POST'],
+//  credentials: true
+//   },
+//   transports: ['websocket', 'polling'] // allow fallback
+// });
+// module.exports.io = io; // ✅ Export io for use in controllers
+
+// const { verifySocketToken } = require('./middlewares/auth');
+
+// io.use(verifySocketToken);
+
+// initSocket(io);
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: ['http://localhost:4200', 'http://localhost:5500', 'http://127.0.0.1:5500'],
-    methods: ['GET', 'POST'],
- credentials: true
-  },
-  transports: ['websocket', 'polling'] // allow fallback
-});
-const { verifySocketToken } = require('./middlewares/auth');
+const { initializeSocket } = require('./controllers/socketcontroller');
 
-io.use(verifySocketToken);
-
-initSocket(io);
+// ✅ Initialize Socket.IO properly
+initializeSocket(server);
 
 
 app.use(cors({

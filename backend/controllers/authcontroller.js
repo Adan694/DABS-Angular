@@ -135,49 +135,101 @@ async function signup(req, res) {
     }
 }
 
+// async function login(req, res) {
+//     const { email, password, role } = req.body;
+
+//     if (!email || !password || !role) {
+//         return res.status(400).json({ message: "Email, password, and role are required." });
+//     }
+
+//     try {
+//         const user = await authenticateUser(email, password, role);
+//         if (!user) {
+//             return res.status(401).json({ message: "Invalid credentials." });
+//         }
+
+//         const token = generateToken(user);
+
+//         if (role === 'doctor') {
+//             const doctor = await Doctor.findOne({ email: user.email });
+//             if (!doctor) {
+//                 return res.status(404).json({ message: "Doctor not found." });
+//             }
+//             return res.status(200).json({
+//                 message: 'Login successful',
+//                 token,
+//                 role: doctor.role,
+//                 doctor: {
+//                     _id: doctor._id,
+//                     name: doctor.name,
+//                     email: doctor.email
+//                 }
+//             });
+//         }
+
+//         return res.status(200).json({
+//             message: 'Login successful',
+//             token,
+//             role: user.role,
+//             patientId: user._id
+//         });
+//     } catch (error) {
+//         console.error("Error logging in:", error.message);
+//             return res.status(401).json({ message: error.message });  
+
+//     }
+// }
 async function login(req, res) {
-    const { email, password, role } = req.body;
+  const { email, password, role } = req.body;
 
-    if (!email || !password || !role) {
-        return res.status(400).json({ message: "Email, password, and role are required." });
+  if (!email || !password || !role) {
+    return res.status(400).json({ message: "Email, password, and role are required." });
+  }
+
+  try {
+    const user = await authenticateUser(email, password, role);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    try {
-        const user = await authenticateUser(email, password, role);
-        if (!user) {
-            return res.status(401).json({ message: "Invalid credentials." });
+    const token = generateToken(user);
+
+    if (role === 'doctor') {
+      const doctor = await Doctor.findOne({ email: user.email });
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor not found." });
+      }
+
+      return res.status(200).json({
+        message: 'Login successful',
+        token,
+        role: doctor.role,
+        user: {
+          _id: doctor._id,
+          name: doctor.name,
+          email: doctor.email,
+          role: doctor.role
         }
-
-        const token = generateToken(user);
-
-        if (role === 'doctor') {
-            const doctor = await Doctor.findOne({ email: user.email });
-            if (!doctor) {
-                return res.status(404).json({ message: "Doctor not found." });
-            }
-            return res.status(200).json({
-                message: 'Login successful',
-                token,
-                role: doctor.role,
-                doctor: {
-                    _id: doctor._id,
-                    name: doctor.name,
-                    email: doctor.email
-                }
-            });
-        }
-
-        return res.status(200).json({
-            message: 'Login successful',
-            token,
-            role: user.role,
-            patientId: user._id
-        });
-    } catch (error) {
-        console.error("Error logging in:", error.message);
-            return res.status(401).json({ message: error.message });  
-
+      });
     }
+
+    // ✅ Send full user object for patients
+    return res.status(200).json({
+      message: 'Login successful',
+      token,
+      role: user.role,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    console.error("Error logging in:", error.message);
+    return res.status(401).json({ message: error.message });
+  }
 }
 
 async function requestOtp(req, res) {

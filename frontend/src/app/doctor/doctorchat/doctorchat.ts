@@ -12,14 +12,17 @@ import { DoctorNavbar } from '../../shared/doctor-navbar/doctor-navbar';
   templateUrl: './doctorchat.html',
   styleUrl: './doctorchat.css'
 })
-
 export class DoctorChat implements OnInit {
   messages: any[] = [];
   newMessage = '';
   currentUserId = localStorage.getItem('doctorId') || ''; 
-  adminId = 'admin'; // or store admin _id in DB later
+  adminId = '689f5be6e5432f608d4b3a54'; // ideally use admin _id from DB later
 
-  constructor(private chatService: ChatService, private socketService: SocketService, private router: Router) {}
+  constructor(
+    private chatService: ChatService,
+    private socketService: SocketService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     if (!this.currentUserId) {
@@ -27,12 +30,17 @@ export class DoctorChat implements OnInit {
       return;
     }
 
-    // join socket room
-    this.socketService.openChatWith('admin');
+    // ✅ join the doctor’s own socket room
+setTimeout(() => {
+    this.socketService.joinChat(this.currentUserId);
+  }, 500);
+
+    // load old messages
     this.loadMessages();
 
-    // listen for new ones
+    // ✅ listen for real-time messages
     this.socketService.onMessage().subscribe((msg) => {
+      // only add messages belonging to this chat
       if (
         (msg.senderId === this.adminId && msg.receiverId === this.currentUserId) ||
         (msg.senderId === this.currentUserId && msg.receiverId === this.adminId)
@@ -57,12 +65,14 @@ export class DoctorChat implements OnInit {
       message: this.newMessage,
     };
 
-    // send to server (store in DB)
-    this.chatService.sendMessage(this.currentUserId, this.adminId, this.newMessage).subscribe(() => {
+    // ✅ save to DB first
+    this.chatService.sendMessage(message.senderId, message.receiverId, message.message).subscribe(() => {
+      // show instantly for sender
       this.messages.push(message);
       this.newMessage = '';
+
+      // ✅ emit via socket to admin in real-time
       this.socketService.sendMessage(message);
     });
   }
 }
-

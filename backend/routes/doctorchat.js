@@ -5,48 +5,6 @@ const Chat = require('../models/chat');
 const { User } = require('../models/users');
 const  Doctor  = require('../models/doctors');
 
-// 🧩 Get doctor list + last message
-// router.get("/all", authenticateToken, async (req, res) => {
-//   try {
-//     const doctors = await Doctor.find({ role: "doctor", isBlocked: false }).select("_id name email");
-
-//     const chatsWithLastMsg = await Promise.all(
-//       doctors.map(async (doctor) => {
-//         const lastMessage = await Chat.findOne({
-//           $or: [
-//             { senderId: doctor._id, receiverRole: "admin" },
-//             { receiverId: doctor._id, senderRole: "admin" },
-//           ],
-//         }).sort({ createdAt: -1 }).lean();
-
-//         const unreadCount = await Chat.countDocuments({
-//           senderId: doctor._id,
-//           receiverRole: "admin",
-//           read: false,
-//         });
-
-//         return {
-//           _id: doctor._id,
-//           name: doctor.name,
-//           email: doctor.email,
-//           lastMessage: lastMessage ? lastMessage.message : null,
-//           lastMessageAt: lastMessage ? lastMessage.createdAt : null,
-//           unreadCount,
-//         };
-//       })
-//     );
-
-//     chatsWithLastMsg.sort((a, b) => {
-//       if (b.unreadCount !== a.unreadCount) return b.unreadCount - a.unreadCount;
-//       return new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0);
-//     });
-
-//     res.json(chatsWithLastMsg);
-//   } catch (err) {
-//     console.error("Error fetching doctors:", err);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// });
 router.get("/alldoctors", async (req, res) => {
   try {
     const doctors = await Doctor.find()
@@ -135,5 +93,16 @@ router.post("/mark-read/:doctorId", async (req, res) => {
   );
   res.json({ success: true });
 });
-
+router.delete("/clear/:doctorId", async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    await Chat.deleteMany({
+      $or: [{ senderId: doctorId }, { receiverId: doctorId }],
+    });
+    res.status(200).json({ message: "Doctor chat cleared successfully" });
+  } catch (err) {
+    console.error("❌ Error clearing doctor chat:", err);
+    res.status(500).json({ error: "Server error while clearing doctor chat" });
+  }
+});
 module.exports = router;
