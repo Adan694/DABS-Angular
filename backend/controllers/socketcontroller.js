@@ -37,27 +37,48 @@ function initializeSocket(server) {
         socket.disconnect();
         return;
       }
-onlineUsers.set(user._id.toString(), socket.id);
-io.emit('userStatusUpdate', { userId: user._id, online: true });
-      //  Join user’s private room
-      socket.join(user._id.toString());
-      console.log(` ${normalizedRole} joined room: ${user._id}`);
-      if (normalizedRole === 'admin') {
-        const currentOnlineUsers = Array.from(onlineUsers.keys());
-        currentOnlineUsers.forEach((id) => {
-          socket.emit('userStatusUpdate', { userId: id, online: true });
-        });
-        console.log(` Sent current online users to admin ${email}`);
-      }
 
+      const userId = user._id.toString();
+    
+      // Store user in onlineUsers map
+      onlineUsers.set(userId, socket.id);
+      socket.join(userId);
+      console.log(`✅ ${normalizedRole} joined room: ${userId}`);
 
-      //  Handle manual join (e.g., admin opening specific doctor/patient chat)
+      // Notify everyone about this user being online
+      io.emit('userStatusUpdate', { userId: userId, online: true });
+
+      // If admin connects, send them all currently online users
+      // After setting onlineUsers
+console.log(`🟢 Current online users count: ${onlineUsers.size}`);
+console.log(`🟢 Online users:`, Array.from(onlineUsers.keys()));
+
+if (normalizedRole === 'admin') {
+  console.log(`🧠 Admin connected: ${email}`);
+  
+  // Wait a bit to ensure the admin socket is fully ready
+  setTimeout(() => {
+    const onlineUserIds = Array.from(onlineUsers.keys());
+    console.log(`📤 Emitting currentOnlineUsers to admin ${socket.id}:`, onlineUserIds);
+    
+    // Emit to this specific admin socket
+    socket.emit('currentOnlineUsers', onlineUserIds);
+    console.log(`✅ Emission completed for admin ${email}`);
+    
+    // Also emit individual status updates as backup
+    onlineUserIds.forEach(userId => {
+      socket.emit('userStatusUpdate', { userId, online: true });
+    });
+  }, 500);
+}
+
+      // Handle manual join
       socket.on('join', (userId) => {
         console.log(` Joined chat room: ${userId}`);
         socket.join(userId);
       });
 
-      //  Handle sending real-time messages
+      // Handle sending real-time messages
       socket.on('send_message', async (msg) => {
         try {
           console.log(' Incoming message:', msg);
@@ -69,25 +90,25 @@ io.emit('userStatusUpdate', { userId: user._id, online: true });
           });
 
           console.log(` Message sent ${msg.senderId} → ${msg.receiverId}`);
-          // io.to(msg.receiverId.toString()).emit('receive_message', chat);
-          // if (msg.senderId !== msg.receiverId) {
-          //   io.to(msg.senderId.toString()).emit('message_delivered', chat);
-          // }
-          // Send only to receiver
-io.to(msg.receiverId.toString()).emit('receive_message', chat);
-
+          io.to(msg.receiverId.toString()).emit('receive_message', chat);
 
         } catch (err) {
           console.error('❌ Error saving message:', err);
         }
       });
+      // Add this in the admin connection section
+socket.on('requestOnlineUsers', () => {
+  console.log('🔄 Admin requested online users');
+  const onlineUserIds = Array.from(onlineUsers.keys());
+  socket.emit('currentOnlineUsers', onlineUserIds);
+});
 
       socket.on('disconnect', () => {
         console.log(` ${user.email} disconnected`);
-onlineUsers.delete(user._id.toString());
-io.emit('userStatusUpdate', { userId: user._id, online: false });
-
+        onlineUsers.delete(userId);
+        io.emit('userStatusUpdate', { userId: userId, online: false });
       });
+
     } catch (error) {
       console.error('❌ Socket connection error:', error);
       socket.disconnect();

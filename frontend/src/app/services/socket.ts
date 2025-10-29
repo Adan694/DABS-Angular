@@ -70,7 +70,9 @@ export class SocketService {
       });
     }
   }
-
+requestOnlineUsers() {
+  this.socket.emit('requestOnlineUsers');
+}
   joinChat(userId: string) {
     this.socket.emit('join', userId);
   }
@@ -97,6 +99,14 @@ export class SocketService {
       });
     });
   }
+  onCurrentOnlineUsers(): Observable<string[]> {
+  return new Observable((observer) => {
+    this.socket.on('currentOnlineUsers', (userIds: string[]) => {
+      console.log('🔵 Current online users received:', userIds);
+      observer.next(userIds);
+    });
+  });
+}
 
   disconnect() {
     if (this.socket && this.socket.connected) {

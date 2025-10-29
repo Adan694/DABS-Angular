@@ -24,6 +24,7 @@ export class AdminChat implements OnInit, OnDestroy {
 
   private msgSub!: Subscription;  
   private statusSub!: Subscription;
+  private onlineUsersSub!: Subscription;
 
   currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
   chatType: 'patients' | 'doctors' = 'patients';
@@ -34,62 +35,95 @@ export class AdminChat implements OnInit, OnDestroy {
     private router: Router,
     private http: HttpClient
   ) {}
+ngOnInit() {
+  console.log("🟡 Admin chat component initialized");
+  
+  this.socketService.connect();
+  
+  // ✅ Load chats FIRST
+  this.loadChats().then(() => {
+    // ✅ THEN setup socket listeners after chats are loaded
+    this.setupSocketListeners();
+    
+    // ✅ THEN request online users manually
+    setTimeout(() => {
+      this.socketService.requestOnlineUsers();
+    }, 1000);
+  });
+}
 
-  ngOnInit() {
-    this.loadChats().then(() => {
-      // setTimeout(() => {
-      //   this.socketService.joinChat(this.currentUserId);
-      //   console.log("✅ Joined admin room:", this.currentUserId);
-      // }, 500);
+  private setupSocketListeners() {
+    // ✅ Listen for initial online users when admin connects
+    // ✅ Listen for initial online users when admin connects
+this.socketService.onCurrentOnlineUsers().subscribe((onlineUserIds: string[]) => {
+  console.log('🔵 Received currentOnlineUsers:', onlineUserIds);
+  
+  // Mark all these users as online in the chat list
+  onlineUserIds.forEach(userId => {
+    const user = this.chats.find(c => c._id === userId);
+    if (user) {
+      user.online = true;
+      console.log(`✅ Marked ${user.name || user.email} as online (from initial list)`);
+    } else {
+      console.log(`ℹ️ Online user ${userId} not found in chat list yet`);
+    }
+  });
+});
 
-      // ✅ Subscribe to socket messages ONCE
-      this.msgSub = this.socketService.onMessage().subscribe((msg) => {
-        console.log("📩 Admin received via socket:", msg);
+    // ✅ Listen for individual status updates
+   // ✅ Listen for individual status updates
+this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
+  console.log('📡 Received userStatusUpdate:', status);
+  
+  const user = this.chats.find(c => c._id === status.userId);
+  if (user) {
+    user.online = status.online;
+    console.log(`✅ Updated ${user.name || user.email} online status to: ${user.online}`);
+  } else {
+    console.log(`ℹ️ Status update for user ${status.userId} - user not in chat list yet`);
+  }
+});
 
-        const chat = this.chats.find(c => c._id === msg.senderId);
-
-        if (this.selectedChat && msg.senderId === this.selectedChat._id) {
-          this.messages.push(msg);
-        } else if (chat) {
-          chat.unreadCount = (chat.unreadCount || 0) + 1;
-        } else {
-          this.chats.unshift({
-            _id: msg.senderId,
-            name: this.chatType === 'patients' ? 'New Patient' : 'New Doctor',
-            email: msg.email || '',
-            unreadCount: 1,
-            lastMessage: msg.message,
-            lastMessageAt: new Date(),
-            online: true,
-          });
-        }
-
-        if (chat) {
-          chat.lastMessage = msg.message;
-          chat.lastMessageAt = new Date();
-          this.chats = [chat, ...this.chats.filter(c => c._id !== chat._id)];
-        }
-      });
-
-      // ✅ Subscribe to user status ONCE
-      this.statusSub = this.socketService.onUserStatus().subscribe((status) => {
-        console.log('📡 Received userStatusUpdate:', status);
-
-        const user = this.chats.find(c => c._id === status.userId);
-        if (user) {
-          user.online = status.online;
-          console.log(`✅ Updated ${user.name || user.email} online = ${user.online}`);
-        } else {
-          console.warn('⚠️ Status update for unknown user', status);
-        }
-      });
+    // ✅ Listen for new messages
+    this.msgSub = this.socketService.onMessage().subscribe((msg) => {
+      console.log("📩 Admin received message via socket:", msg);
+      this.handleIncomingMessage(msg);
     });
+  }
+
+  // Add this helper method to handle incoming messages
+  private handleIncomingMessage(msg: any) {
+    const chat = this.chats.find(c => c._id === msg.senderId);
+
+    if (this.selectedChat && msg.senderId === this.selectedChat._id) {
+      this.messages.push(msg);
+    } else if (chat) {
+      chat.unreadCount = (chat.unreadCount || 0) + 1;
+    } else {
+      // If it's a new user, add them to chat list and mark as online
+      this.chats.unshift({
+        _id: msg.senderId,
+        name: this.chatType === 'patients' ? 'New Patient' : 'New Doctor',
+        email: msg.email || '',
+        unreadCount: 1,
+        lastMessage: msg.message,
+        lastMessageAt: new Date(),
+        online: true, // Assume new message sender is online
+      });
+    }
+
+    if (chat) {
+      chat.lastMessage = msg.message;
+      chat.lastMessageAt = new Date();
+      this.chats = [chat, ...this.chats.filter(c => c._id !== chat._id)];
+    }
   }
 
   // ✅ Unsubscribe properly to prevent double messages
   ngOnDestroy() {
     this.msgSub?.unsubscribe();
     this.statusSub?.unsubscribe();
+    this.onlineUsersSub?.unsubscribe();
   }
 
   switchChatType(type: 'patients' | 'doctors') {
@@ -109,11 +143,17 @@ export class AdminChat implements OnInit, OnDestroy {
       apiCall.subscribe({
         next: (res) => {
           console.log("✅ Loaded chats:", res);
-          this.chats = (res || []).map((c: any) => ({
-            ...c,
-            unreadCount: c.unreadCount ?? 0,
-            online: false,
-          }));
+          
+          // Preserve existing online status when reloading chats
+          this.chats = (res || []).map((c: any) => {
+            const existingChat = this.chats.find(oldChat => oldChat._id === c._id);
+            return {
+              ...c,
+              unreadCount: c.unreadCount ?? 0,
+              // online: existingChat ? existingChat.online : false, // Preserve online status
+              online: false,
+            };
+          });
           resolve();
         },
         error: (err) => {
@@ -151,43 +191,23 @@ export class AdminChat implements OnInit, OnDestroy {
     });
   }
 
-  // sendMessage() {
-  //   if (!this.newMessage.trim()) return;
+  sendMessage() {
+    if (!this.newMessage.trim() || !this.selectedChat?._id) return;
 
-  //   const message = {
-  //     senderId: this.currentUserId,
-  //     receiverId: this.selectedChat._id,
-  //     message: this.newMessage,
-  //   };
+    const message = {
+      senderId: this.currentUserId,
+      receiverId: this.selectedChat._id,
+      message: this.newMessage.trim(),
+    };
 
-  //   const sendApi =
-  //     this.chatType === 'patients'
-  //       ? this.chatService.sendMessage(message.senderId, message.receiverId, message.message)
-  //       : this.chatService.sendDoctorMessage(message.senderId, message.receiverId, message.message);
+    // 👉 Send only through socket
+    this.socketService.sendMessage(message);
 
-  //   sendApi.subscribe(() => {
-  //     this.messages.push(message);
-  //     this.newMessage = '';
-  //     this.socketService.sendMessage(message);
-  //   });
-  // }
-sendMessage() {
-  if (!this.newMessage.trim() || !this.selectedChat?._id) return;
+    // ✅ Optimistically show locally (but mark as temporary)
+    this.messages.push({ ...message, pending: true });
 
-  const message = {
-    senderId: this.currentUserId,
-    receiverId: this.selectedChat._id,
-    message: this.newMessage.trim(),
-  };
-
-  // 👉 Send only through socket
-  this.socketService.sendMessage(message);
-
-  // ✅ Optimistically show locally (but mark as temporary)
-  this.messages.push({ ...message, pending: true });
-
-  this.newMessage = '';
-}
+    this.newMessage = '';
+  }
 
   // --- Context Menu ---
   contextMenuVisible = false;
