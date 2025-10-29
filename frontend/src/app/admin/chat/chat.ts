@@ -25,6 +25,8 @@ export class AdminChat implements OnInit, OnDestroy {
   private msgSub!: Subscription;  
   private statusSub!: Subscription;
   private onlineUsersSub!: Subscription;
+    private allOnlineUserIds: string[] = [];
+
 
   currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
   chatType: 'patients' | 'doctors' = 'patients';
@@ -54,33 +56,38 @@ ngOnInit() {
 
   private setupSocketListeners() {
     // ✅ Listen for initial online users when admin connects
-    // ✅ Listen for initial online users when admin connects
+   // ✅ Listen for initial online users when admin connects
 this.socketService.onCurrentOnlineUsers().subscribe((onlineUserIds: string[]) => {
   console.log('🔵 Received currentOnlineUsers:', onlineUserIds);
   
-  // Mark all these users as online in the chat list
-  onlineUserIds.forEach(userId => {
-    const user = this.chats.find(c => c._id === userId);
-    if (user) {
-      user.online = true;
-      console.log(`✅ Marked ${user.name || user.email} as online (from initial list)`);
-    } else {
-      console.log(`ℹ️ Online user ${userId} not found in chat list yet`);
-    }
+  // ✅ UPDATE THE STORED LIST
+  this.allOnlineUserIds = onlineUserIds;
+  
+  // ✅ APPLY TO CURRENT CHATS
+  this.chats.forEach(chat => {
+    chat.online = this.allOnlineUserIds.includes(chat._id);
   });
+  
+  console.log(`✅ Updated online status for ${this.chats.filter(c => c.online).length} users`);
 });
-
-    // ✅ Listen for individual status updates
    // ✅ Listen for individual status updates
 this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
   console.log('📡 Received userStatusUpdate:', status);
   
+  // ✅ UPDATE STORED LIST
+  if (status.online) {
+    if (!this.allOnlineUserIds.includes(status.userId)) {
+      this.allOnlineUserIds.push(status.userId);
+    }
+  } else {
+    this.allOnlineUserIds = this.allOnlineUserIds.filter(id => id !== status.userId);
+  }
+  
+  // ✅ UPDATE CURRENT CHAT LIST
   const user = this.chats.find(c => c._id === status.userId);
   if (user) {
     user.online = status.online;
     console.log(`✅ Updated ${user.name || user.email} online status to: ${user.online}`);
-  } else {
-    console.log(`ℹ️ Status update for user ${status.userId} - user not in chat list yet`);
   }
 });
 
@@ -133,36 +140,34 @@ this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
     this.loadChats();
   }
 
-  loadChats(): Promise<void> {
-    return new Promise((resolve) => {
-      const apiCall =
-        this.chatType === 'patients'
-          ? this.chatService.getAllChats()
-          : this.chatService.getAllDoctorChats();
+ loadChats(): Promise<void> {
+  return new Promise((resolve) => {
+    const apiCall =
+      this.chatType === 'patients'
+        ? this.chatService.getAllChats()
+        : this.chatService.getAllDoctorChats();
 
-      apiCall.subscribe({
-        next: (res) => {
-          console.log("✅ Loaded chats:", res);
-          
-          // Preserve existing online status when reloading chats
-          this.chats = (res || []).map((c: any) => {
-            const existingChat = this.chats.find(oldChat => oldChat._id === c._id);
-            return {
-              ...c,
-              unreadCount: c.unreadCount ?? 0,
-              // online: existingChat ? existingChat.online : false, // Preserve online status
-              online: false,
-            };
-          });
-          resolve();
-        },
-        error: (err) => {
-          console.error("❌ Error loading chats:", err);
-          resolve();
-        },
-      });
+    apiCall.subscribe({
+      next: (res) => {
+        console.log("✅ Loaded chats:", res);
+        
+        // ✅ PRESERVE ONLINE STATUS FROM STORED LIST
+        this.chats = (res || []).map((c: any) => ({
+          ...c,
+          unreadCount: c.unreadCount ?? 0,
+          online: this.allOnlineUserIds.includes(c._id) // Check if user is in online list
+        }));
+        
+        console.log(`✅ Applied online status to ${this.chats.filter(c => c.online).length} users`);
+        resolve();
+      },
+      error: (err) => {
+        console.error("❌ Error loading chats:", err);
+        resolve();
+      },
     });
-  }
+  });
+}
 
   goToDashboard() {
     this.router.navigate(['/admin']);
