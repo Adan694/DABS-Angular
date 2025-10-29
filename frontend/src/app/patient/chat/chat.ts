@@ -66,11 +66,11 @@ export class Chat implements OnInit {
     };
 
     // send to server (store in DB)
-    this.chatService.sendMessage(this.currentUserId, this.adminId, this.newMessage).subscribe(() => {
+    // this.chatService.sendMessage(this.currentUserId, this.adminId, this.newMessage).subscribe(() => {
       this.messages.push(message);
       this.newMessage = '';
       this.socketService.sendMessage(message);
-    });
+    // });
   }
 }
 

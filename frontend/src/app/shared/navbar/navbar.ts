@@ -49,7 +49,7 @@ constructor(
   }
 
   logout(): void {
-    this.socketService.disconnect();
+this.socketService.disconnect(); // go offline immediately
 
     localStorage.clear();
     this.isLoggedIn = false;

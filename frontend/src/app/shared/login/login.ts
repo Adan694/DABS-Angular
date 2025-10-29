@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SocketService } from '../../services/socket'; // adjust path as needed
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class Login {
   signupData = { name: '', phone: '', cnic: '', email: '', password: '', confirmPassword: '', role: 'patient' };
   errors: any = {};
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,  private socketService: SocketService,) {}
 
   // LOGIN
   async onLogin() {
@@ -57,7 +58,7 @@ export class Login {
     localStorage.setItem('authToken', data.token);
     localStorage.setItem('userRole', data.role);
     localStorage.setItem('user', JSON.stringify(data.user)); // 👈 save complete user details
-
+this.socketService.connect(); // show online immediately
     // ✅ Optionally, also store ID separately for quick access
     if (data.user?._id) {
       if (data.role === 'doctor') {

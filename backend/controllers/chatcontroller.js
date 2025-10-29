@@ -1,35 +1,24 @@
 const Chat = require('../models/chat');
-const { io } = require('../server'); // 👈 import Socket.IO instance
+const { io } = require('../server'); 
 const { getIo } = require('./socketcontroller');
 
 exports.sendMessage = async (req, res) => {
   try {
     const { senderId, receiverId, message } = req.body;
 
-    if (!senderId || !receiverId || !message)
+    if (!senderId || !receiverId || !message) {
       return res.status(400).json({ message: 'Missing required fields' });
+    }
 
     const chat = new Chat({ senderId, receiverId, message });
     await chat.save();
-    const io = getIo(); 
- io.to(senderId).emit('newMessage', chat);
-    io.to(receiverId).emit('newMessage', chat);
-// const emitEvent = 'receive_message';
-
-// // Emit to sender and receiver, avoid double sending if they are same
-// if (senderId === receiverId) {
-//   io.to(senderId).emit(emitEvent, chat);
-// } else {
-//   io.to(senderId).emit(emitEvent, chat);
-//   io.to(receiverId).emit(emitEvent, chat);
-// }
-
     res.status(201).json({ message: 'Message sent successfully', chat });
   } catch (error) {
     console.error('Error sending message:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 exports.getMessages = async (req, res) => {
   try {
@@ -49,9 +38,6 @@ exports.getMessages = async (req, res) => {
   }
 };
 
-/**
- * 📦 Get all chats for a user with last message + unread count
- */
 exports.getChatList = async (req, res) => {
   try {
     const { userId } = req.params;

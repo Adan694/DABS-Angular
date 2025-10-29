@@ -1,41 +1,67 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+
 @Injectable({ providedIn: 'root' })
 export class SocketService {
-  private socket: Socket;
+  private socket!: Socket;
   private serverUrl = 'http://localhost:3000';
+private messageObservable$: Observable<any> | null = null;
+  private statusObservable$: Observable<any> | null = null;
+  // ✅ Use Subjects so we can reuse the same stream
+  private messageSubject = new Subject<any>();
+  private statusSubject = new Subject<any>();
 
   constructor() {
-  const token = localStorage.getItem('authToken');
-
-  const storedUser = localStorage.getItem('user');
-  let email = null;
-let role = 'admin';
-  if (storedUser) {
-    const parsedUser = JSON.parse(storedUser);
-    email = parsedUser.email;
-    role = parsedUser.role;
+    this.initializeSocket();
   }
 
-  console.log(' Socket auth data:', { token, role, email });
+  private initializeSocket() {
+    const token = localStorage.getItem('authToken');
+    const storedUser = localStorage.getItem('user');
+    let email = null;
+    let role = 'admin';
 
-  this.socket = io(this.serverUrl, {
-    transports: ['websocket'],
-    auth: { token, role, email },
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-  });
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      email = parsedUser.email;
+      role = parsedUser.role;
+    }
 
-  this.socket.on('connect', () => {
-    console.log(' Socket connected with ID:', this.socket.id);
-  });
+    console.log(' Socket auth data:', { token, role, email });
 
-  this.socket.on('connect_error', (err) => {
-    console.error(' Socket connection error:', err.message);
-  });
-}
+    this.socket = io(this.serverUrl, {
+      transports: ['websocket'],
+      auth: { token, role, email },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    this.socket.on('connect', () => {
+      console.log('✅ Socket connected with ID:', this.socket.id);
+    });
+
+    this.socket.on('connect_error', (err) => {
+      console.error('❌ Socket connection error:', err.message);
+    });
+
+    // ✅ Attach listeners only once
+    this.socket.on('receive_message', (msg) => {
+      this.messageSubject.next(msg);
+    });
+
+    this.socket.on('userStatusUpdate', (status) => {
+      this.statusSubject.next(status);
+    });
+  }
+
+  connect() {
+    if (!this.socket || !this.socket.connected) {
+      console.log('🔌 Reconnecting socket...');
+      this.initializeSocket();
+    }
+  }
 
   joinChat(userId: string) {
     this.socket.emit('join', userId);
@@ -49,25 +75,28 @@ let role = 'admin';
     this.socket.emit('send_message', message);
   }
 
-  onMessage(): Observable<any> {
-    return new Observable((observer) => {
-      this.socket.on('receive_message', (msg) => observer.next(msg));
-    });
+  // ✅ These return Observables from shared Subjects
+   onMessage(): Observable<any> {
+    if (!this.messageObservable$) {
+      this.messageObservable$ = new Observable((observer) => {
+        this.socket.off('receive_message'); // remove existing listener
+        this.socket.on('receive_message', (msg) => {
+          console.log('🟢 Socket received message:', msg);
+          observer.next(msg);
+        });
+      });
+    }
+    return this.messageObservable$;
   }
 
   onUserStatus(): Observable<any> {
-    return new Observable((observer) => {
-      this.socket.on('userStatusUpdate', (status) => {
-        console.log(' Status event received:', status);
-        observer.next(status);
-      });
-    });
+    return this.statusSubject.asObservable();
   }
-  disconnect() {
-  if (this.socket && this.socket.connected) {
-    console.log('🔌 Disconnecting socket...');
-    this.socket.disconnect();
-  }
-}
 
+  disconnect() {
+    if (this.socket && this.socket.connected) {
+      console.log('🔌 Disconnecting socket...');
+      this.socket.disconnect();
+    }
+  }
 }

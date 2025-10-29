@@ -69,10 +69,13 @@ io.emit('userStatusUpdate', { userId: user._id, online: true });
           });
 
           console.log(` Message sent ${msg.senderId} → ${msg.receiverId}`);
-          io.to(msg.receiverId.toString()).emit('receive_message', chat); 
-          if (msg.senderId !== msg.receiverId) {
-            io.to(msg.senderId.toString()).emit('message_delivered', chat);
-          }
+          // io.to(msg.receiverId.toString()).emit('receive_message', chat);
+          // if (msg.senderId !== msg.receiverId) {
+          //   io.to(msg.senderId.toString()).emit('message_delivered', chat);
+          // }
+          // Send only to receiver
+io.to(msg.receiverId.toString()).emit('receive_message', chat);
+
 
         } catch (err) {
           console.error('❌ Error saving message:', err);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ChatService } from '../../services/chat';
 import { SocketService } from '../../services/socket';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-admin-chat',
@@ -15,13 +16,16 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './chat.html',
   styleUrls: ['./chat.css']
 })
-export class AdminChat implements OnInit {
+export class AdminChat implements OnInit, OnDestroy {
   chats: any[] = [];
   selectedChat: any = null;
   messages: any[] = [];
   newMessage = '';
-currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
 
+  private msgSub!: Subscription;  
+  private statusSub!: Subscription;
+
+  currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
   chatType: 'patients' | 'doctors' = 'patients';
 
   constructor(
@@ -33,13 +37,14 @@ currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
 
   ngOnInit() {
     this.loadChats().then(() => {
- setTimeout(() => {
-      this.socketService.joinChat(this.currentUserId);
-      console.log(" Joined admin room:", this.currentUserId);
-    }, 500);
-      //  Listen for incoming messages
-      this.socketService.onMessage().subscribe((msg) => {
-              console.log("Admin received via socket:", msg);
+      // setTimeout(() => {
+      //   this.socketService.joinChat(this.currentUserId);
+      //   console.log("✅ Joined admin room:", this.currentUserId);
+      // }, 500);
+
+      // ✅ Subscribe to socket messages ONCE
+      this.msgSub = this.socketService.onMessage().subscribe((msg) => {
+        console.log("📩 Admin received via socket:", msg);
 
         const chat = this.chats.find(c => c._id === msg.senderId);
 
@@ -65,18 +70,26 @@ currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
           this.chats = [chat, ...this.chats.filter(c => c._id !== chat._id)];
         }
       });
-this.socketService.onUserStatus().subscribe((status) => {
-  console.log(' Received userStatusUpdate:', status);
 
-  const user = this.chats.find(c => c._id === status.userId);
-  if (user) {
-    user.online = status.online;
-    console.log(` Updated ${user.name || user.email} online = ${user.online}`);
-  } else {
-    console.warn(' Status update received for unknown user', status);
-  }
-});
+      // ✅ Subscribe to user status ONCE
+      this.statusSub = this.socketService.onUserStatus().subscribe((status) => {
+        console.log('📡 Received userStatusUpdate:', status);
+
+        const user = this.chats.find(c => c._id === status.userId);
+        if (user) {
+          user.online = status.online;
+          console.log(`✅ Updated ${user.name || user.email} online = ${user.online}`);
+        } else {
+          console.warn('⚠️ Status update for unknown user', status);
+        }
+      });
     });
+  }
+
+  // ✅ Unsubscribe properly to prevent double messages
+  ngOnDestroy() {
+    this.msgSub?.unsubscribe();
+    this.statusSub?.unsubscribe();
   }
 
   switchChatType(type: 'patients' | 'doctors') {
@@ -95,19 +108,16 @@ this.socketService.onUserStatus().subscribe((status) => {
 
       apiCall.subscribe({
         next: (res) => {
-          
-            console.log("Loaded chats:", res);
+          console.log("✅ Loaded chats:", res);
           this.chats = (res || []).map((c: any) => ({
             ...c,
             unreadCount: c.unreadCount ?? 0,
             online: false,
           }));
-                  console.log(" Processed chats:", this.chats);
-
           resolve();
         },
         error: (err) => {
-          console.error("Error loading chats:", err);
+          console.error("❌ Error loading chats:", err);
           resolve();
         },
       });
@@ -141,27 +151,45 @@ this.socketService.onUserStatus().subscribe((status) => {
     });
   }
 
-  sendMessage() {
-    if (!this.newMessage.trim()) return;
+  // sendMessage() {
+  //   if (!this.newMessage.trim()) return;
 
-    const message = {
-      senderId: this.currentUserId,
-      receiverId: this.selectedChat._id,
-      message: this.newMessage,
-    };
+  //   const message = {
+  //     senderId: this.currentUserId,
+  //     receiverId: this.selectedChat._id,
+  //     message: this.newMessage,
+  //   };
 
-    const sendApi =
-      this.chatType === 'patients'
-        ? this.chatService.sendMessage(message.senderId, message.receiverId, message.message)
-        : this.chatService.sendDoctorMessage(message.senderId, message.receiverId, message.message);
+  //   const sendApi =
+  //     this.chatType === 'patients'
+  //       ? this.chatService.sendMessage(message.senderId, message.receiverId, message.message)
+  //       : this.chatService.sendDoctorMessage(message.senderId, message.receiverId, message.message);
 
-    sendApi.subscribe(() => {
-      this.messages.push(message);
-      this.newMessage = '';
-      this.socketService.sendMessage(message);
-    });
-  }
+  //   sendApi.subscribe(() => {
+  //     this.messages.push(message);
+  //     this.newMessage = '';
+  //     this.socketService.sendMessage(message);
+  //   });
+  // }
+sendMessage() {
+  if (!this.newMessage.trim() || !this.selectedChat?._id) return;
 
+  const message = {
+    senderId: this.currentUserId,
+    receiverId: this.selectedChat._id,
+    message: this.newMessage.trim(),
+  };
+
+  // 👉 Send only through socket
+  this.socketService.sendMessage(message);
+
+  // ✅ Optimistically show locally (but mark as temporary)
+  this.messages.push({ ...message, pending: true });
+
+  this.newMessage = '';
+}
+
+  // --- Context Menu ---
   contextMenuVisible = false;
   menuX = 0;
   menuY = 0;
@@ -184,9 +212,7 @@ this.socketService.onUserStatus().subscribe((status) => {
     if (!chat?._id) return;
 
     const endpoint =
-      this.chatType === 'patients'
-        ? 'chats'
-        : 'doctor-chats';
+      this.chatType === 'patients' ? 'chats' : 'doctor-chats';
 
     this.http.delete(`http://localhost:3000/api/${endpoint}/clear/${chat._id}`)
       .subscribe({
@@ -201,9 +227,7 @@ this.socketService.onUserStatus().subscribe((status) => {
     if (!chat?._id) return;
 
     const endpoint =
-      this.chatType === 'patients'
-        ? 'chats'
-        : 'doctor-chats';
+      this.chatType === 'patients' ? 'chats' : 'doctor-chats';
 
     this.http.delete(`http://localhost:3000/api/${endpoint}/${chat._id}`)
       .subscribe({

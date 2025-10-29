@@ -66,13 +66,13 @@ setTimeout(() => {
     };
 
     // ✅ save to DB first
-    this.chatService.sendMessage(message.senderId, message.receiverId, message.message).subscribe(() => {
+    // this.chatService.sendMessage(message.senderId, message.receiverId, message.message).subscribe(() => {
       // show instantly for sender
       this.messages.push(message);
       this.newMessage = '';
 
       // ✅ emit via socket to admin in real-time
       this.socketService.sendMessage(message);
-    });
+    // });
   }
 }
