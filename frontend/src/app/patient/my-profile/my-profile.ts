@@ -5,6 +5,8 @@ import { Footer } from '../../shared/footer/footer';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { SocketService } from '../../services/socket';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-my-profile',
@@ -18,8 +20,12 @@ export class MyProfile implements OnInit {
   isEditing = false;
   loading = false;
   menuActive = false;
-
-  constructor(private http: HttpClient, private router: Router) { }
+  unreadCount = 0; 
+  private msgSub?: Subscription;
+  currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id || '';
+  constructor(private http: HttpClient, private router: Router,
+    private socketService: SocketService
+  ) { }
 
   ngOnInit(): void {
     const token = localStorage.getItem('authToken');
@@ -29,10 +35,30 @@ export class MyProfile implements OnInit {
       return;
     }
     this.fetchProfile(token);
+        this.setupSocketListeners();
+
   }
 
   toggleMenu() {
     this.menuActive = !this.menuActive;
+  }
+   ngOnDestroy() {
+    this.msgSub?.unsubscribe();
+  }
+
+  setupSocketListeners() {
+    this.socketService.connect();
+
+    this.msgSub = this.socketService.onMessage().subscribe((msg: any) => {
+      if (msg.receiverId === this.currentUserId) {
+        this.unreadCount++;
+        localStorage.setItem('patientUnreadCount', this.unreadCount.toString());
+      }
+    });
+
+    // restore from storage (optional)
+    const saved = localStorage.getItem('patientUnreadCount');
+    if (saved) this.unreadCount = parseInt(saved);
   }
 
   fetchProfile(token: string) {
@@ -50,6 +76,12 @@ export class MyProfile implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+   goToChat() {
+    this.unreadCount = 0;
+    localStorage.removeItem('patientUnreadCount');
+    this.router.navigate(['/patient/chat']);
   }
 
   editProfile() {

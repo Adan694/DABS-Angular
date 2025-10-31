@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 import { DoctorNavbar } from '../../shared/doctor-navbar/doctor-navbar';
 import { AppointmentService } from '../../services/appointment';  
-
+import { Router } from '@angular/router';
+import { SocketService } from '../../services/socket'; 
+import { Subscription } from 'rxjs';
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 @Component({
@@ -21,10 +23,14 @@ export class DocPanel implements OnInit {
   todayAppointments = 0;
   completedCount = 0;
   latestBookings: any[] = [];
-
+unreadCount = 0; 
+  currentDoctorId = localStorage.getItem('doctorId'); 
+  private msgSub?: Subscription;
   chart: any;
 
-  constructor(private appointmentService: AppointmentService) {}  // ✅ Injected service
+  constructor(private appointmentService: AppointmentService, private router: Router,
+     private socketService: SocketService
+  ) {}  // ✅ Injected service
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
@@ -32,7 +38,24 @@ export class DocPanel implements OnInit {
 
   ngOnInit() {
     this.loadBookings();
+        this.setupSocketListeners();
   }
+  ngOnDestroy() {
+    this.msgSub?.unsubscribe();
+  }
+
+  setupSocketListeners() {
+    this.socketService.connect();
+
+    // ✅ Listen for messages
+    this.msgSub = this.socketService.onMessage().subscribe((msg: any) => {
+      // Only count messages intended for this doctor
+      if (msg.receiverId === this.currentDoctorId) {
+        this.unreadCount++;
+      }
+    });
+  }
+
 
   loadBookings() {
     const doctorId = localStorage.getItem('doctorId');
@@ -104,6 +127,10 @@ export class DocPanel implements OnInit {
       },
       options: { responsive: true, maintainAspectRatio: false }
     });
+  }
+  goToChat() {
+      this.unreadCount = 0;
+    this.router.navigate(['/doctor/doctor/chat']); // adjust this path as per your routes
   }
 
   logout() {

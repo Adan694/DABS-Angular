@@ -1,7 +1,9 @@
 <div class="admin-chat-container">
   <!-- SIDEBAR -->
   <div class="chat-sidebar">
-    <button class="dashboard-btn" (click)="goToDashboard()">Back to Dashboard</button>
+    <button class="dashboard-btn" (click)="goToDashboard()">←</button>
+
+    <h2 class="sidebar-title">Admin Chat</h2>
 
     <div class="chat-type-switch">
       <button [class.active]="chatType === 'patients'" (click)="switchChatType('patients')">
@@ -22,6 +24,10 @@
         [class.active]="selectedChat?._id === chat._id"
         [class.unread]="chat.unreadCount > 0"
       >
+        <div class="chat-avatar">
+          {{ (chat.name || chat.email)?.charAt(0)?.toUpperCase() }}
+        </div>
+
         <div class="chat-entry">
           <div class="chat-header-row">
             <div class="chat-name">
@@ -36,8 +42,11 @@
               {{ chat.lastMessageAt ? (chat.lastMessageAt | date : 'shortTime') : '' }}
             </div>
           </div>
-          <div class="chat-message-preview">{{ chat.lastMessage || 'No messages yet' }}</div>
+          <div class="chat-message-preview">
+            {{ chat.lastMessage || 'No messages yet' }}
+          </div>
         </div>
+
         <span *ngIf="chat.unreadCount > 0" class="unread-badge">{{ chat.unreadCount }}</span>
       </li>
     </ul>
@@ -80,7 +89,7 @@
     </div>
   </ng-template>
 
-  <!-- Context menu (unchanged) -->
+  <!-- Context menu -->
   <div
     *ngIf="contextMenuVisible"
     class="context-menu"

@@ -278,3 +278,67 @@
           flex: 1 1 45%;
       }
   }
+  /* 💬 Floating Chat Button */
+  .chat-float-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #166e6b;
+      color: white;
+      border: none;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+      font-size: 1.6rem;
+      cursor: pointer;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease-in-out;
+  }
+
+  .chat-float-btn:hover {
+      background: #0d4e4c;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  }
+
+  .chat-float-btn:active {
+      transform: scale(0.95);
+  }
+
+  /* 🔔 Notification Badge */
+  .chat-notification {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: #ff3b3b;
+      color: white;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 3px 6px;
+      min-width: 20px;
+      text-align: center;
+      animation: pulse 1s infinite;
+  }
+
+  /* 🔄 Pulse animation */
+  @keyframes pulse {
+      0% {
+          transform: scale(1);
+          opacity: 1;
+      }
+
+      50% {
+          transform: scale(1.2);
+          opacity: 0.8;
+      }
+
+      100% {
+          transform: scale(1);
+          opacity: 1;
+      }
+  }

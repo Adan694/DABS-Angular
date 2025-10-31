@@ -1,8 +1,10 @@
 <app-doctor-navbar></app-doctor-navbar>
 <div class="chat-container">
   <!-- Chat Header -->
-  <div class="chat-header">💬 Chat with Admin</div>
-
+  <div class="chat-header">
+    <button class="back-btn" (click)="goBack()">←</button>
+    💬 Chat with Admin
+  </div>
   <!-- Chat Messages -->
   <div class="chat-messages">
     <div

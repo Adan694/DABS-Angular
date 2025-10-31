@@ -42,39 +42,29 @@ ngOnInit() {
   
   this.socketService.connect();
   
-  // ✅ Load chats FIRST
   this.loadChats().then(() => {
-    // ✅ THEN setup socket listeners after chats are loaded
     this.setupSocketListeners();
-    
-    // ✅ THEN request online users manually
-    setTimeout(() => {
+        setTimeout(() => {
       this.socketService.requestOnlineUsers();
     }, 1000);
   });
 }
 
   private setupSocketListeners() {
-    // ✅ Listen for initial online users when admin connects
-   // ✅ Listen for initial online users when admin connects
-this.socketService.onCurrentOnlineUsers().subscribe((onlineUserIds: string[]) => {
-  console.log('🔵 Received currentOnlineUsers:', onlineUserIds);
-  
-  // ✅ UPDATE THE STORED LIST
-  this.allOnlineUserIds = onlineUserIds;
-  
-  // ✅ APPLY TO CURRENT CHATS
-  this.chats.forEach(chat => {
+
+    this.socketService.onCurrentOnlineUsers().subscribe((onlineUserIds: string[]) => {
+    console.log(' Received currentOnlineUsers:', onlineUserIds);
+    this.allOnlineUserIds = onlineUserIds;
+    this.chats.forEach(chat => {
     chat.online = this.allOnlineUserIds.includes(chat._id);
   });
   
-  console.log(`✅ Updated online status for ${this.chats.filter(c => c.online).length} users`);
-});
-   // ✅ Listen for individual status updates
-this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
-  console.log('📡 Received userStatusUpdate:', status);
+  console.log(` Updated online status for ${this.chats.filter(c => c.online).length} users`);
+    });
+    
+    this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
+    console.log(' Received userStatusUpdate:', status);
   
-  // ✅ UPDATE STORED LIST
   if (status.online) {
     if (!this.allOnlineUserIds.includes(status.userId)) {
       this.allOnlineUserIds.push(status.userId);
@@ -83,17 +73,17 @@ this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
     this.allOnlineUserIds = this.allOnlineUserIds.filter(id => id !== status.userId);
   }
   
-  // ✅ UPDATE CURRENT CHAT LIST
+  // UPDATE CURRENT CHAT LIST
   const user = this.chats.find(c => c._id === status.userId);
   if (user) {
     user.online = status.online;
-    console.log(`✅ Updated ${user.name || user.email} online status to: ${user.online}`);
+    console.log(`Updated ${user.name || user.email} online status to: ${user.online}`);
   }
 });
 
-    // ✅ Listen for new messages
+    //  Listen for new messages
     this.msgSub = this.socketService.onMessage().subscribe((msg) => {
-      console.log("📩 Admin received message via socket:", msg);
+      console.log("Admin received message via socket:", msg);
       this.handleIncomingMessage(msg);
     });
   }
@@ -115,7 +105,7 @@ this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
         unreadCount: 1,
         lastMessage: msg.message,
         lastMessageAt: new Date(),
-        online: true, // Assume new message sender is online
+        online: true, 
       });
     }
 
@@ -126,7 +116,7 @@ this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
     }
   }
 
-  // ✅ Unsubscribe properly to prevent double messages
+  //  Unsubscribe properly to prevent double messages
   ngOnDestroy() {
     this.msgSub?.unsubscribe();
     this.statusSub?.unsubscribe();
@@ -149,16 +139,16 @@ this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
 
     apiCall.subscribe({
       next: (res) => {
-        console.log("✅ Loaded chats:", res);
+        console.log(" Loaded chats:", res);
         
-        // ✅ PRESERVE ONLINE STATUS FROM STORED LIST
+        //  PRESERVE ONLINE STATUS FROM STORED LIST
         this.chats = (res || []).map((c: any) => ({
           ...c,
           unreadCount: c.unreadCount ?? 0,
           online: this.allOnlineUserIds.includes(c._id) // Check if user is in online list
         }));
         
-        console.log(`✅ Applied online status to ${this.chats.filter(c => c.online).length} users`);
+        console.log(` Applied online status to ${this.chats.filter(c => c.online).length} users`);
         resolve();
       },
       error: (err) => {
@@ -205,10 +195,8 @@ this.statusSub = this.socketService.onUserStatus().subscribe((status: any) => {
       message: this.newMessage.trim(),
     };
 
-    // 👉 Send only through socket
     this.socketService.sendMessage(message);
 
-    // ✅ Optimistically show locally (but mark as temporary)
     this.messages.push({ ...message, pending: true });
 
     this.newMessage = '';

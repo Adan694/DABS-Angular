@@ -73,7 +73,12 @@
 
   <div id="loader" *ngIf="loading">Loading...</div>
 </div>
-<button class="chat-fab" routerLink="/patient/chat" title="Chat with Admin">
+<!-- 💬 Floating Chat Button -->
+<button class="chat-float-btn" (click)="goToChat()" title="Chat with Admin">
   <i class="fas fa-comments"></i>
+  <span *ngIf="unreadCount > 0" class="chat-notification">
+    {{ unreadCount > 9 ? '9+' : unreadCount }}
+  </span>
 </button>
+
 <app-footer></app-footer>

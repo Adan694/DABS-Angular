@@ -75,4 +75,8 @@ setTimeout(() => {
       this.socketService.sendMessage(message);
     // });
   }
+  
+  goBack() {
+    this.router.navigate(['/doctor']); // 👈 change path if your doctor panel route differs
+  }
 }

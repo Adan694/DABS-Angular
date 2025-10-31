@@ -38,7 +38,6 @@ export class SocketService {
     });
   }
 
-  /** ✅ ADDED: Explicit connect method (for login use) */
   connect() {
     if (!this.socket || !this.socket.connected) {
       console.log('🔌 Connecting socket...');
@@ -102,7 +101,7 @@ requestOnlineUsers() {
   onCurrentOnlineUsers(): Observable<string[]> {
   return new Observable((observer) => {
     this.socket.on('currentOnlineUsers', (userIds: string[]) => {
-      console.log('🔵 Current online users received:', userIds);
+      console.log(' Current online users received:', userIds);
       observer.next(userIds);
     });
   });

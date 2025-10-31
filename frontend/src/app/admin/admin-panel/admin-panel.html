@@ -8,10 +8,10 @@
       <div>Admin Dashboard</div>
 
       <div class="header-actions">
-        <button class="chat-btn" routerLink="/admin/chat">
+        <!-- <button class="chat-btn" routerLink="/admin/chat">
           <i class="fa-solid fa-comments"></i> Messages
           <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount }}</span>
-        </button>
+        </button> -->
 
         <button id="logoutBtn">Logout</button>
       </div>
@@ -54,4 +54,11 @@
       </div>
     </section>
   </main>
+  <!-- 💬 Floating Chat Button -->
+  <button class="chat-float-btn" (click)="goToAdminChat()" title="Open Messages">
+    <i class="fa-solid fa-comments"></i>
+    <span *ngIf="unreadCount > 0" class="chat-notification">
+      {{ unreadCount > 9 ? '9+' : unreadCount }}
+    </span>
+  </button>
 </div>

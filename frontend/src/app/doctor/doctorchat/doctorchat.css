@@ -25,13 +25,28 @@
 
 /* 🧭 Header */
 .chat-header {
-    background: #166e6b;
-    color: #fff;
-    padding: 15px 20px;
-    font-weight: 600;
     display: flex;
     align-items: center;
-    font-size: 18px;
+    gap: 10px;
+    background-color: #096666;
+    color: white;
+    padding: 10px 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.back-btn:hover {
+    transform: scale(1.1);
 }
 
 .chat-header i {

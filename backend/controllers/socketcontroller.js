@@ -43,27 +43,23 @@ function initializeSocket(server) {
       // Store user in onlineUsers map
       onlineUsers.set(userId, socket.id);
       socket.join(userId);
-      console.log(`✅ ${normalizedRole} joined room: ${userId}`);
+      console.log(` ${normalizedRole} joined room: ${userId}`);
 
       // Notify everyone about this user being online
       io.emit('userStatusUpdate', { userId: userId, online: true });
 
-      // If admin connects, send them all currently online users
-      // After setting onlineUsers
-console.log(`🟢 Current online users count: ${onlineUsers.size}`);
-console.log(`🟢 Online users:`, Array.from(onlineUsers.keys()));
+console.log(` Current online users count: ${onlineUsers.size}`);
+console.log(` Online users:`, Array.from(onlineUsers.keys()));
 
 if (normalizedRole === 'admin') {
-  console.log(`🧠 Admin connected: ${email}`);
+  console.log(` Admin connected: ${email}`);
   
   // Wait a bit to ensure the admin socket is fully ready
   setTimeout(() => {
     const onlineUserIds = Array.from(onlineUsers.keys());
-    console.log(`📤 Emitting currentOnlineUsers to admin ${socket.id}:`, onlineUserIds);
-    
-    // Emit to this specific admin socket
-    socket.emit('currentOnlineUsers', onlineUserIds);
-    console.log(`✅ Emission completed for admin ${email}`);
+    console.log(` Emitting currentOnlineUsers to admin ${socket.id}:`, onlineUserIds);
+        socket.emit('currentOnlineUsers', onlineUserIds);
+    console.log(` Emission completed for admin ${email}`);
     
     // Also emit individual status updates as backup
     onlineUserIds.forEach(userId => {
@@ -98,7 +94,7 @@ if (normalizedRole === 'admin') {
       });
       // Add this in the admin connection section
 socket.on('requestOnlineUsers', () => {
-  console.log('🔄 Admin requested online users');
+  console.log(' Admin requested online users');
   const onlineUserIds = Array.from(onlineUsers.keys());
   socket.emit('currentOnlineUsers', onlineUserIds);
 });

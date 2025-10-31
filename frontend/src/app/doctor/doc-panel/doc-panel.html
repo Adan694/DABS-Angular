@@ -44,4 +44,11 @@
       </ul>
     </section>
   </main>
+  <!-- 💬 Floating Chat Button -->
+  <button class="chat-float-btn" (click)="goToChat()">
+    <i class="fas fa-comments"></i>
+    <span *ngIf="unreadCount > 0" class="chat-notification">
+      {{ unreadCount > 9 ? '9+' : unreadCount }}
+    </span>
+  </button>
 </body>

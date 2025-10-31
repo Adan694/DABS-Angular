@@ -7,6 +7,7 @@ import { Router, RouterLink } from '@angular/router';
 import { SocketService } from '../../services/socket';
 import { ChatService } from '../../services/chat';
 
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-admin-panel',
@@ -21,10 +22,11 @@ constructor(
   private adminService: AdminService,
   private router: Router,
   private socketService: SocketService,
-  private chatService: ChatService
+  private chatService: ChatService,
+  private zone: NgZone
 ) {}
 unreadCount = 0;
-currentUserId = localStorage.getItem('adminId') || 'admin';
+currentUserId = localStorage.getItem('adminId') || '689f5be6e5432f608d4b3a54';
 
   ngOnInit(): void {
     const role = localStorage.getItem("userRole");
@@ -37,13 +39,22 @@ currentUserId = localStorage.getItem('adminId') || 'admin';
     this.fetchTodaysAppointments();
     setTimeout(() => this.renderCharts(), 500);
     this.socketService.joinChat(this.currentUserId);
-
-// Listen for incoming messages (from patients)
+const saved = localStorage.getItem('adminUnreadCount');
+if (saved) this.unreadCount = parseInt(saved);
 this.socketService.onMessage().subscribe((msg) => {
+  console.log('📩 Message received from socket:', msg); // <---- add this
+
   if (msg.receiverId === this.currentUserId) {
-    this.unreadCount++;
+    this.zone.run(() => {
+      this.unreadCount++;
+      console.log('New message received! Unread:', this.unreadCount);
+      localStorage.setItem('adminUnreadCount', this.unreadCount.toString());
+    });
   }
 });
+
+
+
   }
 
   ngAfterViewInit(): void {
@@ -73,7 +84,13 @@ dropdownOpen = false;
 toggleDropdown(e: Event) {
   e.stopPropagation();
   this.dropdownOpen = !this.dropdownOpen;
+  }
+  goToAdminChat() {
+  this.unreadCount = 0;
+  localStorage.removeItem('adminUnreadCount');
+  this.router.navigate(['/admin/chat']);
 }
+
 
 goToPatientChats() {
   this.router.navigate(['/admin/chat']);
