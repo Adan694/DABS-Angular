@@ -9,6 +9,7 @@ import { MyAppointments } from './my-appointments/my-appointments';
 import { MyProfile } from './my-profile/my-profile';
 import { Booking } from './booking/booking';
 import { Chat } from './chat/chat';
+import { PatientDoctorChat } from './patient-doctor-chat/patient-doctor-chat';
 
 export const routes: Routes = [
   { path: '', component: Dashboard },
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'all-doctors', component: AllDoctors },
   { path: 'booking', component: Booking },
   { path: 'chat', component: Chat },
+  {path: 'chat/:doctorId',component: PatientDoctorChat},
 
 ];

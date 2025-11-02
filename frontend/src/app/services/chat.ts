@@ -70,6 +70,19 @@ export class ChatService {
   markAsRead(contactId: string, baseUrl: string) {
     return this.http.post(`${baseUrl}${contactId}`, {});
   }
+getPatientDoctorMessages(patientId: string, doctorId: string) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/${patientId}/${doctorId}`,
+    this.getAuthHeaders()
+  );
+}
+
+getPatientsByDoctor(doctorId: string) {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/patients/${doctorId}`,
+    this.getAuthHeaders()
+  );
+}
 
 
 }

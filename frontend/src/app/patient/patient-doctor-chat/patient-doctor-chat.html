@@ -1,0 +1,28 @@
+<div class="chat-wrapper">
+  <!-- Header -->
+  <div class="chat-header">
+    <button (click)="goBack()">←</button>
+    <h3>Chat with Dr. {{ doctorName }}</h3>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-body" #chatBody>
+    <div
+      *ngFor="let msg of messages"
+      [ngClass]="{
+        message: true,
+        sent: msg.senderId === patientId,
+        received: msg.senderId !== patientId
+      }"
+    >
+      <div class="bubble">{{ msg.message }}</div>
+      <div class="time">{{ msg.createdAt | date : 'shortTime' }}</div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-footer">
+    <input [(ngModel)]="newMessage" placeholder="Type a message..." (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="admin-chat-container">
+  <!-- 🟢 Sidebar -->
+  <div class="chat-sidebar">
+    <button class="dashboard-btn" (click)="router.navigate(['/doctor/dashboard'])">←</button>
+    <h3 class="sidebar-title">Patients</h3>
+
+    <ul>
+      <li
+        *ngFor="let p of patients"
+        (click)="selectPatient(p)"
+        [class.active]="p._id === selectedPatientId"
+        [class.unread]="p.isUnread"
+      >
+        <div class="chat-avatar">{{ p.name[0] | uppercase }}</div>
+        <div class="chat-entry">
+          <div class="chat-header-row">
+            <div class="chat-name">{{ p.name }}</div>
+            <div *ngIf="p.isUnread" class="unread-badge">{{ p.unreadCount }}</div>
+          </div>
+          <div class="chat-message-preview">{{ p.lastMessage || 'No messages yet' }}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 🪄 Chat Window -->
+  <div class="chat-window" *ngIf="selectedPatientId; else noChat">
+    <div class="chat-header">Chat with {{ selectedPatientName }}</div>
+    <div class="chat-messages">
+      <div
+        *ngFor="let msg of messages"
+        class="chat-message"
+        [ngClass]="{
+          sent: msg.senderId.toString() === doctorId.toString(),
+          received: msg.senderId.toString() !== doctorId.toString()
+        }"
+      >
+        <div class="bubble">{{ msg.message }}</div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input
+        [(ngModel)]="newMessage"
+        placeholder="Type a message..."
+        (keyup.enter)="sendMessage()"
+      />
+      <button (click)="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <ng-template #noChat>
+    <div class="no-chat">Select a patient to start chatting</div>
+  </ng-template>
+</div>

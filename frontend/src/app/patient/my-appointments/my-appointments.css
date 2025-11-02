@@ -105,6 +105,20 @@ button[type="submit"]:hover,
     color: var(--primary-color);
     margin-bottom: 10px;
 }
+.btn-chat {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-left: 6px;
+}
+
+.btn-chat:hover {
+    background-color: #0056b3;
+}
 
 input,
 select {

@@ -3,13 +3,13 @@ import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AppointmentService } from '../../services/appointment';
 
 @Component({
   selector: 'app-my-appointments',
   standalone: true,
-  imports: [Navbar, Footer, CommonModule, FormsModule],
+  imports: [Navbar, Footer, CommonModule, FormsModule, RouterLink],
   templateUrl: './my-appointments.html',
   styleUrl: './my-appointments.css'
 })
@@ -204,6 +204,13 @@ canViewFeedback(a: any): boolean {
     a.status?.toLowerCase() === 'completed' && 
     a.hasFeedback
   );
+}
+
+  goToChat(a: any) {
+  if (!a.doctorId) return;
+  this.router.navigate(['/patient/chat', a.doctorId._id], {
+    state: { doctorName: a.doctorId.name }
+  });
 }
 
 }

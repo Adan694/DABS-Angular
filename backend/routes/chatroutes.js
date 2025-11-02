@@ -2,39 +2,49 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middlewares/auth');
 const ChatController = require('../controllers/chatcontroller');
-const Chat = require('../models/chat');  
+const Chat = require('../models/chat');
 const { User } = require('../models/users');
-// Get chat messages between two users
-router.get('/:userId/:contactId', authenticateToken, ChatController.getMessages);
-router.get('/list/:userId', ChatController.getChatList);
+const Booking = require('../models/booking');
 
-// Send a new message
-router.post('/send', authenticateToken, ChatController.sendMessage);
-
-router.get("/all", async (req, res) => {
+/**
+ * ✅ 1. Get patients for a specific doctor
+ */
+router.get('/patients/:doctorId', async (req, res) => {
   try {
-    // const patients = await User.find({ role: "patient", isBlocked: false })
-          const patients = await User.find({ role: "patient"})
+    const doctorId = req.params.doctorId;
+    console.log("Doctor ID param:", doctorId);
 
-      .select("_id name email");
-    // console.log("🧠 Total patients found:", patients.length);
+    const appointments = await Booking.find({ doctorId }).populate('patientId', 'name email');
+    console.log("Appointments found:", appointments.length);
 
+   const patients = appointments
+  .map(a => a.patientId)
+  .filter((p) => p && p._id) // remove nulls first
+  .filter((p, i, self) => self.findIndex(x => x._id.toString() === p._id.toString()) === i);
+
+
+    res.json(patients);
+  } catch (err) {
+    console.error('Error fetching doctor patients:', err);
+    res.status(500).json({ message: 'Error fetching patients' });
+  }
+});
+
+/**
+ * ✅ 2. Get all patients (admin or doctor view)
+ */
+router.get('/all', async (req, res) => {
+  try {
+    const patients = await User.find({ role: 'patient' }).select('_id name email');
     const chatsWithLastMsg = await Promise.all(
       patients.map(async (patient) => {
         const lastMessage = await Chat.findOne({
-          $or: [
-            { senderId: patient._id },
-            { receiverId: patient._id }
-          ]
-        })
-          .sort({ createdAt: -1 })
-          .lean();
-  // if (!lastMessage) {
-  //         console.log("⚠️ No chat found for:", patient.name, patient._id);
-  //       }
+          $or: [{ senderId: patient._id }, { receiverId: patient._id }]
+        }).sort({ createdAt: -1 }).lean();
+
         const unreadCount = await Chat.countDocuments({
           senderId: patient._id,
-          receiverRole: "admin",
+          receiverRole: 'admin',
           read: false
         });
 
@@ -49,11 +59,8 @@ router.get("/all", async (req, res) => {
         };
       })
     );
-    // console.log("✅ Total chats with last message:", chatsWithLastMsg.length);
 
-    // 🟢 Sort chats so the latest (or unread) are at the top
     chatsWithLastMsg.sort((a, b) => {
-      // Sort by unread first, then by lastMessageAt
       if (b.unreadCount !== a.unreadCount)
         return b.unreadCount - a.unreadCount;
       return new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0);
@@ -61,25 +68,31 @@ router.get("/all", async (req, res) => {
 
     res.json(chatsWithLastMsg);
   } catch (err) {
-    console.error("Error fetching patient list:", err);
-    res.status(500).json({ error: "Server error fetching patients" });
+    console.error('Error fetching patient list:', err);
+    res.status(500).json({ error: 'Server error fetching patients' });
   }
 });
 
-router.post("/mark-read/:patientId", async (req, res) => {
+/**
+ * ✅ 3. Mark messages as read
+ */
+router.post('/mark-read/:patientId', async (req, res) => {
   try {
     const { patientId } = req.params;
     await Chat.updateMany(
-      { senderId: patientId, receiverRole: "admin", read: false },
+      { senderId: patientId, receiverRole: 'admin', read: false },
       { $set: { read: true } }
     );
     res.json({ success: true });
   } catch (err) {
-    console.error("Error marking messages read:", err);
-    res.status(500).json({ error: "Server error marking messages read" });
+    console.error('Error marking messages read:', err);
+    res.status(500).json({ error: 'Server error marking messages read' });
   }
 });
 
+/**
+ * ✅ 4. Delete or clear chat
+ */
 router.delete('/clear/:chatId', async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -89,11 +102,6 @@ router.delete('/clear/:chatId', async (req, res) => {
         { senderId: chatId, receiverId: '689f5be6e5432f608d4b3a54' },
       ],
     });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'No messages found to clear' });
-    }
-
     res.json({ message: 'Chat messages cleared', deletedCount: result.deletedCount });
   } catch (err) {
     console.error('❌ Error clearing chat:', err);
@@ -104,23 +112,53 @@ router.delete('/clear/:chatId', async (req, res) => {
 router.delete('/:chatId', async (req, res) => {
   try {
     const { chatId } = req.params;
-
     const result = await Chat.deleteMany({
       $or: [
         { senderId: 'admin', receiverId: chatId },
         { senderId: chatId, receiverId: 'admin' },
       ],
     });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'No messages found to delete' });
-    }
-
     res.json({ message: 'Chat permanently deleted', deletedCount: result.deletedCount });
   } catch (err) {
     console.error('❌ Error deleting chat:', err);
     res.status(500).json({ message: 'Server error deleting chat' });
   }
 });
+
+/**
+ * ✅ 5. Doctor-patient messages (use distinct path!)
+ */
+router.get('/:senderId/:receiverId', async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.params;
+    const messages = await Chat.find({
+      $or: [
+        { senderId, receiverId },
+        { senderId: receiverId, receiverId: senderId },
+      ],
+    }).sort({ createdAt: 1 });
+
+    res.json(messages);
+  } catch (err) {
+    console.error('Error fetching messages (alias route):', err);
+    res.status(500).json({ message: 'Error fetching messages' });
+  }
+});
+/**
+ * ✅ 6. Send a new chat message
+ */
+router.post('/send', async (req, res) => {
+  try {
+    const { senderId, receiverId, message } = req.body;
+    const newMsg = new Chat({ senderId, receiverId, message });
+    await newMsg.save();
+    res.json(newMsg);
+  } catch (err) {
+    console.error('Error sending message:', err);
+    res.status(500).json({ message: 'Error sending message' });
+  }
+});
+
+
 
 module.exports = router;

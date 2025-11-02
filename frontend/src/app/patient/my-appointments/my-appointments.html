@@ -67,6 +67,17 @@
                 (click)="cancelAppointment(a._id)"
                 >Cancel</span
               >
+              <button
+                *ngIf="
+                  (a.status?.toLowerCase().trim() === 'confirmed' ||
+                    a.status?.toLowerCase().trim() === 'completed') &&
+                  a.doctorId?._id
+                "
+                class="btn-chat"
+                (click)="goToChat(a)"
+              >
+                💬 Chat with Doctor
+              </button>
 
               <!-- Show "Give Feedback" only if appointment is completed and feedback not given -->
               <button
